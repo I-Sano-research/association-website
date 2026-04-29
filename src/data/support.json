@@ -1,0 +1,44 @@
+[
+  {
+    "id": "request",
+    "heading": "地域活性化支援を依頼したい方",
+    "shortHeading": "支援を依頼したい",
+    "description": "桜の風がイベント企画・運営をサポート。行政や地域団体との連携調整も含む。",
+    "target": "法人・団体・行政で、地域活性化に取り組みたいが何から始めればいいか分からない方",
+    "examples": [
+      "地域イベントをやりたいが、企画から相談したい",
+      "地域活性化の取り組みを始めたいが、何から手をつければよいか分からない"
+    ],
+    "icon": "handshake",
+    "href": "/support#request",
+    "contactType": "request"
+  },
+  {
+    "id": "venue",
+    "heading": "活動場所を提供したい方",
+    "shortHeading": "活動場所を提供したい",
+    "description": "イベント会場として場所を提供。桜の風が企画・集客・運営を担当。",
+    "target": "地域の施設・公園・広場等を管理する団体・自治体・個人",
+    "examples": [
+      "公園を活用した催しを検討している",
+      "施設の認知度を上げたい"
+    ],
+    "icon": "map-pin",
+    "href": "/support#venue",
+    "contactType": "venue"
+  },
+  {
+    "id": "join",
+    "heading": "活動に参加したい方",
+    "shortHeading": "活動に参加したい",
+    "description": "イベントスタッフ・出店者・協力者として参加可能。経験不問。",
+    "target": "イベント運営の手伝い、ボランティア、出店等での参加を希望する個人・団体",
+    "examples": [
+      "イベントにブースを出してみたい",
+      "ボランティアとして手伝いたい"
+    ],
+    "icon": "users",
+    "href": "/support#join",
+    "contactType": "join"
+  }
+]

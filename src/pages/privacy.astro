@@ -1,0 +1,142 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import siteConfig from '../data/site.config.json';
+---
+
+<Layout
+  title="プライバシーポリシー"
+  description="一般社団法人 桜の風の個人情報の取扱いに関する方針です。"
+  showCTA={false}
+>
+
+  <!-- ページヒーロー -->
+  <section class="bg-sakura-50 border-b border-sakura-100 pt-12 pb-8 px-4 md:px-8">
+    <div class="max-w-3xl mx-auto">
+      <p class="text-xs font-semibold tracking-widest text-sakura-400 uppercase mb-2">Privacy Policy</p>
+      <h1 class="font-heading text-2xl md:text-3xl font-semibold text-sakura-900">プライバシーポリシー</h1>
+    </div>
+  </section>
+
+  <div class="max-w-3xl mx-auto px-4 md:px-8 py-14 space-y-12">
+
+    <!-- 前文 -->
+    <section aria-labelledby="preamble">
+      <p class="text-sm leading-loose text-gray-700">
+        {siteConfig.siteName}（以下「当法人」）は、個人情報の保護に関する法律（以下「個人情報保護法」）および関連するガイドラインを遵守し、
+        お客様の個人情報を適切に取り扱うことを重要な責務と考えております。
+        本方針は、当法人が取り扱う個人情報について定めるものです。
+      </p>
+    </section>
+
+    <!-- 1. 個人情報の定義 -->
+    <section aria-labelledby="definition-heading">
+      <SectionHeading title="1. 個人情報の定義" id="definition-heading" variant="simple" />
+      <p class="text-sm leading-loose text-gray-700">
+        本方針において「個人情報」とは、個人情報保護法第2条第1項に定める「個人情報」をいい、
+        生存する個人に関する情報であって、当該情報に含まれる氏名、生年月日その他の記述等により
+        特定の個人を識別することができるものを指します。
+      </p>
+    </section>
+
+    <!-- 2. 個人情報の取得 -->
+    <section aria-labelledby="collection-heading">
+      <SectionHeading title="2. 個人情報の取得" id="collection-heading" variant="simple" />
+      <p class="text-sm leading-loose text-gray-700 mb-4">
+        当法人は、以下の情報をお問い合わせフォーム等を通じて取得することがあります。
+      </p>
+      <ul class="list-disc list-inside text-sm leading-loose text-gray-700 space-y-1 pl-2">
+        <li>氏名（法人・団体名を含む）</li>
+        <li>メールアドレス</li>
+        <li>電話番号</li>
+        <li>お問い合わせ内容その他ご連絡に必要な情報</li>
+      </ul>
+      <p class="mt-4 text-sm leading-loose text-gray-700">
+        個人情報の取得は、適法かつ公正な手段によって行い、偽りその他不正の手段によって取得することはありません。
+      </p>
+    </section>
+
+    <!-- 3. 利用目的 -->
+    <section aria-labelledby="purpose-heading">
+      <SectionHeading title="3. 利用目的" id="purpose-heading" variant="simple" />
+      <p class="text-sm leading-loose text-gray-700 mb-4">
+        取得した個人情報は、以下の目的のために利用します。
+      </p>
+      <ul class="list-disc list-inside text-sm leading-loose text-gray-700 space-y-1 pl-2">
+        <li>お問い合わせへの回答およびその後のご連絡</li>
+        <li>当法人が主催・協力するイベントに関する案内の送付</li>
+        <li>当法人の活動に関するお知らせ</li>
+        <li>法令に基づく対応</li>
+      </ul>
+      <p class="mt-4 text-sm leading-loose text-gray-700">
+        上記の目的以外に個人情報を利用する必要が生じた場合は、あらかじめご本人の同意を得た上で行います。
+      </p>
+    </section>
+
+    <!-- 4. 第三者提供 -->
+    <section aria-labelledby="third-party-heading">
+      <SectionHeading title="4. 第三者への提供" id="third-party-heading" variant="simple" />
+      <p class="text-sm leading-loose text-gray-700 mb-4">
+        当法人は、以下のいずれかに該当する場合を除き、ご本人の同意を得ることなく個人情報を第三者に提供しません。
+      </p>
+      <ul class="list-disc list-inside text-sm leading-loose text-gray-700 space-y-1 pl-2">
+        <li>法令に基づく場合</li>
+        <li>人の生命、身体または財産の保護のために必要がある場合であって、ご本人の同意を得ることが困難であるとき</li>
+        <li>公衆衛生の向上または児童の健全な育成の推進のために特に必要がある場合であって、ご本人の同意を得ることが困難であるとき</li>
+        <li>国の機関もしくは地方公共団体またはその委託を受けた者が法令の定める事務を遂行することに対して協力する必要がある場合</li>
+      </ul>
+    </section>
+
+    <!-- 5. 安全管理措置 -->
+    <section aria-labelledby="security-heading">
+      <SectionHeading title="5. 安全管理措置" id="security-heading" variant="simple" />
+      <p class="text-sm leading-loose text-gray-700">
+        当法人は、取得した個人情報の漏えい、滅失またはき損の防止その他個人情報の安全管理のため、
+        合理的な安全管理措置を講じます。また、個人情報を取り扱う役員・スタッフに対して、
+        個人情報の適正な取扱いに関する教育・指導を行います。
+      </p>
+    </section>
+
+    <!-- 6. 開示・訂正・削除の請求 -->
+    <section aria-labelledby="rights-heading">
+      <SectionHeading title="6. 個人情報の開示・訂正・削除" id="rights-heading" variant="simple" />
+      <p class="text-sm leading-loose text-gray-700">
+        ご本人から自己の個人情報について開示・訂正・追加・削除・利用停止・消去・第三者提供の停止を
+        ご請求いただいた場合は、個人情報保護法の規定に従い、合理的な期間内に対応いたします。
+        ご請求の際は、ご本人確認のための情報をご提示いただく場合があります。
+        お手数ですが、下記のお問い合わせ窓口までご連絡ください。
+      </p>
+    </section>
+
+    <!-- 7. お問い合わせ窓口 -->
+    <section aria-labelledby="contact-heading">
+      <SectionHeading title="7. お問い合わせ窓口" id="contact-heading" variant="simple" />
+      <p class="text-sm leading-loose text-gray-700 mb-5">
+        個人情報の取扱いに関するお問い合わせは、下記までご連絡ください。
+      </p>
+      <address class="not-italic rounded-xl bg-sakura-50 border border-sakura-100 px-6 py-5 text-sm leading-loose text-gray-700 space-y-1">
+        <p class="font-medium text-sakura-900">{siteConfig.siteName}</p>
+        <p>{siteConfig.contact.zip ? `〒${siteConfig.contact.zip} ` : ''}{siteConfig.contact.address}</p>
+        <p>
+          電話：
+          <a href={`tel:${siteConfig.contact.phone}`} class="text-sakura-600 hover:text-sakura-800 underline underline-offset-2 transition-colors">
+            {siteConfig.contact.phone}
+          </a>
+        </p>
+        <p>
+          メール：
+          <a href={`mailto:${siteConfig.contact.email}`} class="text-sakura-600 hover:text-sakura-800 underline underline-offset-2 transition-colors break-all">
+            {siteConfig.contact.email}
+          </a>
+        </p>
+      </address>
+    </section>
+
+    <!-- 制定日・改定 -->
+    <div class="pt-4 border-t border-gray-200 text-right text-xs text-gray-400 space-y-1">
+      <p>制定日：2026年X月X日</p>
+      <p>{siteConfig.siteName}</p>
+    </div>
+
+  </div>
+</Layout>

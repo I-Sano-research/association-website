@@ -1,0 +1,114 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import EventCard from '../../components/EventCard.astro';
+import { getCollection } from 'astro:content';
+
+const allEvents = await getCollection('events');
+const now = new Date();
+
+// ── status 判定：status フィールドを正とする。
+//    ただし status==="upcoming" かつ date が過去の場合は finished 扱い。
+function resolveStatus(status: 'upcoming' | 'finished', date: Date): 'upcoming' | 'finished' {
+  if (status === 'upcoming' && date < now) return 'finished';
+  return status;
+}
+
+const upcoming = allEvents
+  .filter(e => resolveStatus(e.data.status, e.data.date) === 'upcoming')
+  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime()); // 昇順
+
+const finished = allEvents
+  .filter(e => resolveStatus(e.data.status, e.data.date) === 'finished')
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime()); // 降順
+---
+
+<Layout
+  title="イベント情報"
+  description="一般社団法人 桜の風が主催・協力するイベントの開催情報と活動レポートです。"
+  showCTA={true}
+>
+
+  <!-- ページヒーロー -->
+  <section class="bg-gradient-to-b from-sakura-50 to-white pt-14 pb-10 px-4 md:px-8 text-center">
+    <p class="text-xs font-semibold tracking-widest text-sakura-400 uppercase mb-3">Events</p>
+    <h1 class="font-heading text-3xl md:text-4xl font-semibold text-sakura-900">イベント情報</h1>
+    <div class="mt-4 flex justify-center">
+      <span class="block w-14 h-1 rounded-full bg-sakura-300"></span>
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-4 md:px-8 pb-20 space-y-20">
+
+    <!-- 今後のイベント -->
+    <section aria-labelledby="upcoming-heading">
+      <SectionHeading
+        title="今後のイベント"
+        id="upcoming-heading"
+        variant="default"
+      />
+
+      {upcoming.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {upcoming.map(event => (
+            <EventCard
+              title={event.data.title}
+              date={event.data.date}
+              location={event.data.location}
+              venue={event.data.venue}
+              status="upcoming"
+              image={event.data.image}
+              summary={event.data.summary}
+              slug={event.data.slug}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="rounded-xl border border-sakura-100 bg-sakura-50 px-6 py-10 text-center">
+          <p class="text-gray-600 leading-relaxed">
+            現在、開催予定のイベントはありません。<br />
+            最新情報は
+            <a
+              href="https://www.instagram.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-sakura-600 underline underline-offset-2 hover:text-sakura-800 transition-colors"
+            >
+              Instagram
+            </a>
+            でお知らせします。
+          </p>
+        </div>
+      )}
+    </section>
+
+    <!-- これまでのイベント -->
+    <section aria-labelledby="finished-heading">
+      <SectionHeading
+        title="これまでのイベント"
+        id="finished-heading"
+        variant="default"
+      />
+
+      {finished.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {finished.map(event => (
+            <EventCard
+              title={event.data.title}
+              date={event.data.date}
+              location={event.data.location}
+              venue={event.data.venue}
+              status="finished"
+              image={event.data.image}
+              summary={event.data.summary}
+              slug={event.data.slug}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="text-gray-500 text-sm">まだ活動レポートはありません。</p>
+      )}
+    </section>
+
+  </div>
+</Layout>

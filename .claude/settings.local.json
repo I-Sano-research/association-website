@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('zod' in d.get\\('packages',{}\\) or any\\('zod' in k for k in d.get\\('packages',{}\\).keys\\(\\)\\)\\)\")",
+      "Bash(npm run *)",
+      "Bash(magick --version)",
+      "Bash(convert --version)",
+      "Bash(node -e ' *)"
+    ]
+  }
+}

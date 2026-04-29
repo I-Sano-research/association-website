@@ -1,0 +1,95 @@
+---
+interface Props {
+  title:    string;
+  date:     Date;
+  location: string;
+  venue?:   string;
+  status:   'upcoming' | 'finished';
+  image?:   string;
+  summary:  string;
+  slug:     string;
+}
+
+const { title, date, location, venue, status, image, summary, slug } = Astro.props;
+
+// ── 日付を日本語フォーマットに変換 ──────────────────────────────────
+const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'] as const;
+const y  = date.getFullYear();
+const m  = date.getMonth() + 1;
+const d  = date.getDate();
+const wd = WEEKDAYS[date.getDay()];
+const formattedDate = `${y}年${m}月${d}日（${wd}）`;
+
+// ── ステータスバッジ設定 ───────────────────────────────────────────
+const isUpcoming = status === 'upcoming';
+const badgeClass = isUpcoming
+  ? 'bg-accent-100 text-accent-700 border border-accent-300'
+  : 'bg-gray-100 text-gray-500 border border-gray-200';
+const badgeLabel = isUpcoming ? '開催予定' : '開催済み';
+---
+
+<a
+  href={`/events/${slug}`}
+  class="group flex flex-col rounded-2xl border border-sakura-100 bg-white overflow-hidden shadow-sm
+         hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 focus-visible:outline
+         focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sakura-500"
+  aria-label={`${title}（${formattedDate}・${location}）`}
+>
+  <!-- サムネイル画像 -->
+  <div class="aspect-video bg-sakura-50 overflow-hidden">
+    {image ? (
+      <img
+        src={image}
+        alt={title}
+        width="600"
+        height="338"
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        loading="lazy"
+      />
+    ) : (
+      <!-- デフォルト画像（画像未設定時のプレースホルダー） -->
+      <div class="w-full h-full flex flex-col items-center justify-center gap-2 text-sakura-200">
+        <span class="w-14 h-14 rounded-full bg-sakura-500 flex items-center justify-center text-white text-xl font-bold select-none">桜</span>
+        <span class="text-xs text-sakura-300">桜の風</span>
+      </div>
+    )}
+  </div>
+
+  <!-- カード本文 -->
+  <div class="flex flex-col flex-1 p-5 gap-3">
+
+    <!-- ステータスバッジ -->
+    <span class:list={['self-start text-xs font-medium px-2.5 py-0.5 rounded-full', badgeClass]}>
+      {badgeLabel}
+    </span>
+
+    <!-- イベント名 -->
+    <h3 class="font-heading text-lg font-semibold text-sakura-900 leading-snug group-hover:text-sakura-600 transition-colors">
+      {title}
+    </h3>
+
+    <!-- 日時・場所 -->
+    <dl class="text-sm text-gray-600 space-y-1">
+      <div class="flex items-start gap-2">
+        <dt class="sr-only">開催日</dt>
+        <!-- カレンダーアイコン -->
+        <svg class="w-4 h-4 mt-0.5 shrink-0 text-sakura-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <dd>{formattedDate}</dd>
+      </div>
+      <div class="flex items-start gap-2">
+        <dt class="sr-only">開催場所</dt>
+        <!-- ピンアイコン -->
+        <svg class="w-4 h-4 mt-0.5 shrink-0 text-sakura-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>
+        </svg>
+        <dd>{location}{venue && `・${venue}`}</dd>
+      </div>
+    </dl>
+
+    <!-- 概要 -->
+    <p class="text-sm text-gray-600 leading-relaxed line-clamp-2 mt-auto">{summary}</p>
+
+  </div>
+</a>

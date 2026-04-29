@@ -1,0 +1,92 @@
+---
+import siteConfig from '../data/site.config.json';
+
+const pageLinks = [
+  { label: 'トップページ',     href: '/' },
+  { label: '桜の風について',   href: '/about' },
+  { label: '活動内容',         href: '/activities' },
+  { label: 'イベント情報',     href: '/events' },
+  { label: '協力・参加のご案内', href: '/support' },
+  { label: 'お問い合わせ',     href: '/contact' },
+  { label: 'プライバシーポリシー', href: '/privacy' },
+];
+
+const hasInstagram = Boolean(siteConfig.social.instagram);
+---
+
+<footer class="bg-sakura-900 text-sakura-100 mt-auto">
+  <div class="max-w-6xl mx-auto px-4 md:px-8 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+
+      <!-- カラム1：法人情報 -->
+      <div>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-8 h-8 rounded-full bg-sakura-500 flex items-center justify-center text-white text-sm font-bold select-none" aria-hidden="true">桜</span>
+          <span class="font-heading font-semibold text-white text-lg">{siteConfig.siteName}</span>
+        </div>
+        <address class="not-italic text-sm leading-loose text-sakura-200 space-y-1">
+          <p>{siteConfig.contact.zip ? `〒${siteConfig.contact.zip} ` : ''}{siteConfig.contact.address}</p>
+          <p>
+            <a href={`tel:${siteConfig.contact.phone}`} class="hover:text-white transition-colors">
+              {siteConfig.contact.phone}
+            </a>
+          </p>
+          <p>
+            <a href={`mailto:${siteConfig.contact.email}`} class="hover:text-white transition-colors break-all">
+              {siteConfig.contact.email}
+            </a>
+          </p>
+        </address>
+        <p class="mt-3 text-xs text-sakura-300">
+          設立：{siteConfig.foundedDate}
+        </p>
+      </div>
+
+      <!-- カラム2：サイトナビ -->
+      <nav aria-label="フッターナビゲーション">
+        <h2 class="text-xs font-semibold tracking-widest text-sakura-300 uppercase mb-4">サイトマップ</h2>
+        <ul class="space-y-2">
+          {pageLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="text-sm text-sakura-200 hover:text-white transition-colors"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <!-- カラム3：SNS + コピーライト -->
+      <div class="flex flex-col justify-between gap-6">
+        {hasInstagram && (
+          <div>
+            <h2 class="text-xs font-semibold tracking-widest text-sakura-300 uppercase mb-4">SNS</h2>
+            <a
+              href={siteConfig.social.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 text-sakura-200 hover:text-white transition-colors"
+              aria-label="Instagram（新しいタブで開きます）"
+            >
+              <!-- Instagram アイコン（SVG inline） -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+              </svg>
+              <span class="text-sm">Instagram</span>
+            </a>
+          </div>
+        )}
+
+        <div class="mt-auto">
+          <p class="text-xs text-sakura-400">{siteConfig.copyright}</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</footer>

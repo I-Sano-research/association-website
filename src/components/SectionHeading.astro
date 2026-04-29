@@ -1,0 +1,60 @@
+---
+interface Props {
+  /** 見出しテキスト（必須） */
+  title: string;
+  /** 補足テキスト（任意） */
+  subtitle?: string;
+  /** セクションID。未指定時は title から自動生成 */
+  id?: string;
+  /** 見出しスタイルの種類（デフォルト: 'default'） */
+  variant?: 'default' | 'hero' | 'simple';
+}
+
+const {
+  title,
+  subtitle,
+  variant = 'default',
+  id: idProp,
+} = Astro.props;
+
+// id 未指定時は title からスラッグ生成（日本語はそのままでも id として有効）
+const headingId = idProp ?? title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\u3000-\u9fff-]/g, '');
+---
+
+{variant === 'default' && (
+  <div class="scroll-mt-24 mb-14" id={headingId}>
+    <h2 class="font-heading text-2xl md:text-3xl font-semibold text-sakura-900 relative inline-block
+                after:block after:h-0.5 after:w-full after:bg-sakura-400 after:mt-1.5">
+      {title}
+    </h2>
+    {subtitle && (
+      <p class="mt-3 text-base text-gray-600 leading-relaxed">{subtitle}</p>
+    )}
+  </div>
+)}
+
+{variant === 'hero' && (
+  <div class="scroll-mt-24 mb-16 text-center" id={headingId}>
+    <h2 class="font-heading text-3xl md:text-4xl lg:text-5xl font-semibold text-sakura-900 leading-tight">
+      {title}
+    </h2>
+    {subtitle && (
+      <p class="mt-4 text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">{subtitle}</p>
+    )}
+    <!-- アクセント装飾ライン -->
+    <div class="mt-5 flex justify-center">
+      <span class="block w-16 h-1 rounded-full bg-sakura-400"></span>
+    </div>
+  </div>
+)}
+
+{variant === 'simple' && (
+  <div class="scroll-mt-24 mb-10" id={headingId}>
+    <h2 class="font-heading text-xl md:text-2xl font-semibold text-gray-800 border-l-4 border-sakura-300 pl-3">
+      {title}
+    </h2>
+    {subtitle && (
+      <p class="mt-2 text-sm text-gray-500 leading-relaxed">{subtitle}</p>
+    )}
+  </div>
+)}

@@ -1,0 +1,168 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import siteConfig from '../data/site.config.json';
+
+const philosophyPillars = [
+  {
+    number: '01',
+    heading: 'つなぐ',
+    body: '地域と人、企業と地域、行政と住民。イベントを通じて新しいつながりを生む。',
+  },
+  {
+    number: '02',
+    heading: 'ひらく',
+    body: 'ハンディキャップのある方が自然に社会と関われる場を、"非日常"の力でつくる。',
+  },
+  {
+    number: '03',
+    heading: 'つづける',
+    body: '単発で終わらない。継続的な地域還元で、関わるすべての人の一歩を支える。',
+  },
+];
+
+const overviewRows = [
+  { label: '法人名',       value: siteConfig.siteName },
+  { label: '法人番号',     value: siteConfig.corporateNumber },
+  { label: '代表者',       value: `${siteConfig.representative.title} ${siteConfig.representative.name}` },
+  { label: '所在地',       value: siteConfig.contact.address },
+  { label: '設立年月',     value: siteConfig.foundedDate },
+  { label: '電話番号',     value: siteConfig.contact.phone, href: `tel:${siteConfig.contact.phone}` },
+  { label: 'メールアドレス', value: siteConfig.contact.email, href: `mailto:${siteConfig.contact.email}` },
+];
+---
+
+<Layout
+  title="桜の風について"
+  description="一般社団法人 桜の風の代表挨拶、理念、法人概要をご紹介します。"
+  showCTA={true}
+>
+
+  <!-- ページヒーロー -->
+  <section class="bg-gradient-to-b from-sakura-50 to-white pt-14 pb-10 px-4 md:px-8 text-center">
+    <p class="text-xs font-semibold tracking-widest text-sakura-400 uppercase mb-3">About</p>
+    <h1 class="font-heading text-3xl md:text-4xl font-semibold text-sakura-900">桜の風について</h1>
+    <div class="mt-4 flex justify-center">
+      <span class="block w-14 h-1 rounded-full bg-sakura-300"></span>
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-4 md:px-8 pb-20 space-y-20">
+
+    <!-- ────────────────────────────────────────────
+         A-01 代表挨拶
+         ──────────────────────────────────────────── -->
+    <section aria-labelledby="greeting-heading">
+      <SectionHeading title="代表挨拶" id="greeting-heading" variant="default" />
+
+      <div class="flex flex-col md:flex-row gap-10 md:gap-14 items-start">
+
+        <!-- 代表写真 -->
+        <div class="shrink-0 w-full md:w-64">
+          <div class="aspect-square rounded-2xl overflow-hidden bg-sakura-100">
+            <img
+              src="/images/about/representative.jpg"
+              alt="一般社団法人 桜の風 代表理事 高橋 翔太"
+              width="256"
+              height="256"
+              class="w-full h-full object-cover object-top"
+              loading="lazy"
+              onerror="this.style.display='none';document.getElementById('rep-placeholder').style.display='flex'"
+            />
+            <!-- 画像未受領時のプレースホルダー -->
+            <div id="rep-placeholder" class="w-full h-full flex-col items-center justify-center text-sakura-300 gap-2" aria-hidden="true" style="display:none;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+              </svg>
+              <span class="text-xs">写真準備中</span>
+            </div>
+          </div>
+          <p class="mt-3 text-center text-sm text-gray-700">
+            <span class="block text-xs text-gray-400 mb-0.5">代表理事</span>
+            <span class="font-heading font-semibold text-sakura-900 text-base">高橋 翔太</span>
+          </p>
+        </div>
+
+        <!-- 挨拶文 -->
+        <div class="flex-1 text-base leading-relaxed text-gray-700 space-y-5">
+          <p>私たちは、「地域と人をつなぐ仕組み」をつくることを目的に活動しています。</p>
+          <p>近年、地域社会においては、人と人とのつながりが希薄になり、特にハンディキャップを抱える方々が社会と接点を持つ機会は、まだ十分とは言えない状況にあります。</p>
+          <p>また、地域活性化に取り組む企業や団体においても、「何から始めればよいのか分からない」という課題が多く存在しています。</p>
+          <p>こうした課題に対して、私たちは行政や地域の企業・団体と連携しながら、フェスイベントなどの活動を通じて、人と地域をつなぐ機会を創出しています。</p>
+          <p>イベントという"非日常の場"を活用することで、ハンディキャップのある方々が自然に社会と関わり、地域の一員として参加できる環境をつくる。それが、私たちの取り組みの原動力です。</p>
+          <p>また、動物愛護支援をはじめとした社会貢献活動にも力を入れており、単発の取り組みにとどまらず、継続的に地域へ価値を還元していくことを大切にしています。</p>
+          <p>私たちは、単なるイベント運営団体ではありません。地域に新しい関係性を生み出す「仕掛け人」として、関わるすべての人が前向きな一歩を踏み出せる場をつくり続けていきます。</p>
+          <p>地域活性化に取り組みたい企業・団体の皆様、活動の場を提供してくださる地域の皆様、そして参加を希望されるすべての方々とともに、より明るい社会の実現に向けて歩んでいきたいと考えています。</p>
+          <p>今後とも、温かいご支援とご協力を賜りますよう、よろしくお願い申し上げます。</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ────────────────────────────────────────────
+         A-02 理念
+         ──────────────────────────────────────────── -->
+    <section aria-labelledby="philosophy-heading">
+      <SectionHeading title="私たちの理念" id="philosophy-heading" variant="default" />
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {philosophyPillars.map((pillar) => (
+          <div class="relative rounded-2xl border border-sakura-200 bg-white p-8 overflow-hidden">
+            <!-- 背景装飾番号 -->
+            <span
+              class="absolute top-4 right-5 font-heading font-bold text-6xl text-sakura-50 select-none leading-none"
+              aria-hidden="true"
+            >
+              {pillar.number}
+            </span>
+            <!-- 左ボーダーアクセント -->
+            <span class="absolute left-0 top-6 bottom-6 w-1 rounded-r-full bg-sakura-400"></span>
+
+            <h3 class="font-heading text-2xl font-semibold text-sakura-800 mb-3 relative">
+              {pillar.heading}
+            </h3>
+            <p class="text-sm leading-relaxed text-gray-600 relative">{pillar.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ────────────────────────────────────────────
+         A-03 法人概要
+         ──────────────────────────────────────────── -->
+    <section aria-labelledby="overview-heading">
+      <SectionHeading title="法人概要" id="overview-heading" variant="default" />
+
+      <div class="overflow-x-auto rounded-xl border border-gray-200">
+        <table class="w-full text-sm">
+          <tbody>
+            {overviewRows.map((row, i) => (
+              <tr class:list={[i % 2 === 0 ? 'bg-white' : 'bg-sakura-50/50']}>
+                <th
+                  scope="row"
+                  class="w-32 md:w-44 px-5 py-4 text-left font-medium text-gray-500 border-r border-gray-200 whitespace-nowrap align-top"
+                >
+                  {row.label}
+                </th>
+                <td class="px-5 py-4 text-gray-800 leading-relaxed">
+                  {row.href ? (
+                    <a
+                      href={row.href}
+                      class="text-sakura-600 underline underline-offset-2 hover:text-sakura-800 transition-colors break-all"
+                    >
+                      {row.value}
+                    </a>
+                  ) : (
+                    row.value
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+</Layout>

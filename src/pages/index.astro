@@ -1,11 +1,362 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import EventCard from '../components/EventCard.astro';
+import { getCollection } from 'astro:content';
+import siteConfig from '../data/site.config.json';
+import supportData from '../data/support.json';
+import statsData from '../data/stats.json';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// ── T-03 活動ハイライト：priority 上位3件 ──────────────────────────
+const allActivities = await getCollection('activities');
+const topActivities = [...allActivities]
+  .sort((a, b) => a.data.priority - b.data.priority)
+  .slice(0, 3);
+
+// ── T-04 直近イベント ──────────────────────────────────────────────
+const now = new Date();
+const allEvents = await getCollection('events');
+
+function resolveStatus(status: 'upcoming' | 'finished', date: Date) {
+  return status === 'upcoming' && date < now ? 'finished' : status;
+}
+
+const upcoming = allEvents
+  .filter(e => resolveStatus(e.data.status, e.data.date) === 'upcoming')
+  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+
+const featuredEvents = upcoming.length > 0
+  ? upcoming.slice(0, 2)
+  : [...allEvents]
+      .filter(e => resolveStatus(e.data.status, e.data.date) === 'finished')
+      .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+      .slice(0, 2);
+
+// ── support.json：description 先頭1文を抽出 ────────────────────────
+function firstSentence(text: string) {
+  const m = text.match(/^[^。！？]+[。！？]/);
+  return m ? m[0] : text;
+}
+
+// アイコンSVGパス（support.json の icon フィールドに対応）
+const supportIcons: Record<string, string> = {
+  handshake: 'M4.5 12h15M7 8.5S5 10 5 12s2 3.5 2 3.5M17 8.5s2 1.5 2 3.5-2 3.5-2 3.5M9 7l1.5 5M15 7l-1.5 5',
+  'map-pin': 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z',
+  users: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+};
+
+// 活動アイコン（activities の icon フィールドに対応）
+const activityIcons: Record<string, string> = {
+  'calendar-heart': 'M3 6h18M3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6M3 6V4a2 2 0 0 0 2-2h2M17 2h2a2 2 0 0 0 2 2v2M12 13.5c0 0-2-1.5-2-3a2 2 0 0 1 4 0c0 1.5-2 3-2 3z',
+  'map-pin': 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z',
+  'heart-handshake': 'M12 5.5C9.8 3.4 6.3 3.5 4.2 5.6c-2 2-2 5.3 0 7.4L12 21l7.8-8c2-2 2-5.3 0-7.4-2.1-2.1-5.6-2.2-7.8-.1zM7 9h2M15 9h2',
+  'paw-print': 'M11 4a1 1 0 1 0 2 0 1 1 0 0 0-2 0zM7 6a1 1 0 1 0 2 0 1 1 0 0 0-2 0zM15 6a1 1 0 1 0 2 0 1 1 0 0 0-2 0zM5 10a1 1 0 1 0 2 0 1 1 0 0 0-2 0zM17 10a1 1 0 1 0 2 0 1 1 0 0 0-2 0zM8 14c0 2 1.8 4 4 4s4-2 4-4c0-1.5-1-2.5-2-3l-2-1-2 1c-1 .5-2 1.5-2 3z',
+};
 ---
 
-<Layout>
-	<Welcome />
+<Layout
+  description="茨城県を拠点に、ドッグフェスや地域イベントを通じて人と地域をつなぐ一般社団法人 桜の風の公式サイトです。"
+  showCTA={false}
+>
+
+  <!-- ═══════════════════════════════════════════════════
+       T-01 ファーストビュー
+       ═══════════════════════════════════════════════════ -->
+  <section
+    class="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-sakura-900"
+    aria-label="ファーストビュー"
+  >
+    <!-- 背景写真 -->
+    <img
+      src="/images/hero-bg.jpg"
+      alt=""
+      aria-hidden="true"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+      loading="eager"
+      fetchpriority="high"
+    />
+
+    <!-- オーバーレイ：写真上に重ねて文字を読みやすくする（下方向に少し濃くなるグラデーション） -->
+    <div
+      class="absolute inset-0"
+      style="background: linear-gradient(160deg, rgba(90,29,49,0.60) 0%, rgba(90,29,49,0.52) 50%, rgba(90,29,49,0.65) 100%);"
+      aria-hidden="true"
+    ></div>
+
+    <!-- テキストコンテンツ -->
+    <div class="relative z-10 max-w-3xl mx-auto px-6 md:px-12 py-20 text-center">
+
+      <!-- 法人名：サイズを視認しやすく拡大 -->
+      <p class="text-white/90 text-base md:text-lg font-semibold tracking-[0.18em] mb-6"
+         style="text-shadow: 0 1px 6px rgba(0,0,0,0.35);">
+        一般社団法人 桜の風
+      </p>
+
+      <h1 class="font-heading text-3xl md:text-5xl lg:text-6xl font-semibold text-white leading-tight mb-8"
+          style="text-shadow: 0 2px 12px rgba(0,0,0,0.30);">
+        地域と人をつなぐ、<br class="hidden sm:inline" />イベントの力で。
+      </h1>
+
+      <p class="text-white/85 text-base md:text-lg leading-relaxed max-w-xl mx-auto mb-10"
+         style="text-shadow: 0 1px 6px rgba(0,0,0,0.30);">
+        茨城県を拠点にドッグフェスや地域イベントを通じて、<br class="hidden md:inline" />
+        人と地域をつなぐ活動をしています。
+      </p>
+
+      <div class="flex flex-wrap gap-4 justify-center">
+        <a
+          href="/about"
+          class="px-7 py-3.5 rounded-lg bg-white text-sakura-800 font-semibold text-sm
+                 hover:bg-sakura-50 transition-colors focus-visible:outline focus-visible:outline-2
+                 focus-visible:outline-offset-2 focus-visible:outline-white"
+        >
+          桜の風について
+        </a>
+        <a
+          href="/support"
+          class="px-7 py-3.5 rounded-lg border-2 border-white text-white font-semibold text-sm
+                 hover:bg-white/10 transition-colors"
+        >
+          協力・参加のご案内
+        </a>
+      </div>
+    </div>
+
+    <!-- スクロール誘導 -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 animate-bounce" aria-hidden="true">
+      <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       T-02 CTAカード × 3
+       ═══════════════════════════════════════════════════ -->
+  <section class="py-16 px-4 md:px-8 bg-white" aria-labelledby="cta-cards-heading">
+    <div class="max-w-6xl mx-auto">
+      <p id="cta-cards-heading" class="text-center text-sm font-semibold tracking-widest text-sakura-400 uppercase mb-10">
+        3つの関わり方
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {supportData.map(item => (
+          <a
+            href={item.href}
+            class="group flex flex-col rounded-2xl border border-sakura-100 bg-white p-7
+                   hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200
+                   focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sakura-500"
+            aria-label={item.heading}
+          >
+            <!-- アイコン -->
+            <div class="w-12 h-12 rounded-xl bg-sakura-100 flex items-center justify-center mb-5
+                        group-hover:bg-sakura-200 transition-colors" aria-hidden="true">
+              <svg class="w-6 h-6 text-sakura-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d={supportIcons[item.icon] ?? 'M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0'} />
+              </svg>
+            </div>
+            <!-- 見出し -->
+            <h2 class="font-heading text-lg font-semibold text-sakura-900 mb-3 group-hover:text-sakura-700 transition-colors leading-snug">
+              {item.shortHeading}
+            </h2>
+            <!-- 説明（先頭1文） -->
+            <p class="text-sm text-gray-600 leading-relaxed flex-1">
+              {firstSentence(item.description)}
+            </p>
+            <!-- 矢印 -->
+            <div class="mt-5 flex items-center gap-1 text-accent-500 text-sm font-medium">
+              詳しく見る
+              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       T-03 活動ハイライト
+       ═══════════════════════════════════════════════════ -->
+  <section class="py-20 px-4 md:px-8 bg-sakura-50/60" aria-labelledby="activities-heading">
+    <div class="max-w-6xl mx-auto">
+      <SectionHeading
+        title="桜の風の活動"
+        subtitle="フェスイベントの企画運営を中心に、地域活性化・ハンディキャップ支援・動物愛護の領域で活動しています。"
+        id="activities-heading"
+        variant="hero"
+      />
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {topActivities.map(act => (
+          <div class="rounded-2xl border border-sakura-100 bg-white p-6">
+            <!-- アイコン -->
+            <div class="w-12 h-12 rounded-xl bg-nature-50 flex items-center justify-center mb-5" aria-hidden="true">
+              <svg class="w-6 h-6 text-nature-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d={activityIcons[act.data.icon ?? ''] ?? 'M12 2a9 9 0 1 0 0 18A9 9 0 0 0 12 2z'} />
+              </svg>
+            </div>
+            <h3 class="font-heading text-base font-semibold text-sakura-900 mb-3 leading-snug">
+              {act.data.title}
+            </h3>
+            <p class="text-sm text-gray-600 leading-relaxed">{act.data.summary}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-10 text-center">
+        <a
+          href="/activities"
+          class="inline-flex items-center gap-2 text-sakura-600 font-medium text-sm
+                 hover:text-sakura-800 transition-colors"
+        >
+          すべての活動を見る
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       T-04 直近イベント
+       ═══════════════════════════════════════════════════ -->
+  <section class="py-20 px-4 md:px-8 bg-white" aria-labelledby="events-heading">
+    <div class="max-w-6xl mx-auto">
+      <SectionHeading
+        title="イベント情報"
+        subtitle={upcoming.length > 0 ? '今後の開催予定イベントをご確認ください。' : '直近のイベントレポートです。'}
+        id="events-heading"
+        variant="hero"
+      />
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
+        {featuredEvents.map(event => (
+          <EventCard
+            title={event.data.title}
+            date={event.data.date}
+            location={event.data.location}
+            venue={event.data.venue}
+            status={resolveStatus(event.data.status, event.data.date)}
+            image={event.data.image}
+            summary={event.data.summary}
+            slug={event.data.slug}
+          />
+        ))}
+      </div>
+
+      <div class="mt-10 text-center">
+        <a
+          href="/events"
+          class="inline-flex items-center gap-2 text-sakura-600 font-medium text-sm
+                 hover:text-sakura-800 transition-colors"
+        >
+          すべてのイベントを見る
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       T-05 実績数字
+       ═══════════════════════════════════════════════════ -->
+  <section class="py-16 px-4 md:px-8 bg-sakura-50" aria-label="実績">
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-3 gap-6 md:gap-12">
+        {statsData.map(stat => (
+          <div class="text-center">
+            <p class="font-heading font-semibold text-sakura-900 leading-none mb-2">
+              {'prefix' in stat && stat.prefix && (
+                <span class="block text-xs text-sakura-400 font-sans font-normal mb-1 tracking-wide">
+                  {stat.prefix}
+                </span>
+              )}
+              <span class="text-4xl md:text-5xl">{stat.value}</span>
+              <span class="text-lg md:text-2xl ml-0.5">{stat.suffix}</span>
+            </p>
+            <p class="text-xs md:text-sm text-gray-500 mt-2">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       T-06 代表メッセージ抜粋
+       ═══════════════════════════════════════════════════ -->
+  <section class="py-24 px-4 md:px-8 bg-white" aria-labelledby="representative-heading">
+    <div class="max-w-4xl mx-auto">
+      <div class="flex flex-col md:flex-row items-center gap-10 md:gap-16">
+
+        <!-- 代表写真（円形） -->
+        <div class="shrink-0">
+          <div class="w-36 h-36 md:w-44 md:h-44 rounded-full overflow-hidden bg-sakura-100 ring-4 ring-sakura-200">
+            <img
+              src="/images/about/representative.jpg"
+              alt="代表理事 高橋 翔太"
+              width="176"
+              height="176"
+              class="w-full h-full object-cover"
+              loading="lazy"
+              onerror="this.style.display='none'"
+            />
+            <!-- 未受領時プレースホルダー -->
+            <div class="w-full h-full flex items-center justify-center text-sakura-300" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-center mt-3">
+            <span class="block text-xs text-gray-400 mb-0.5">代表理事</span>
+            <span class="font-heading font-semibold text-sakura-900 text-base">高橋 翔太</span>
+          </p>
+        </div>
+
+        <!-- メッセージ -->
+        <div class="flex-1 text-center md:text-left">
+          <p class="text-xs font-semibold tracking-widest text-sakura-400 uppercase mb-4">Message</p>
+          <!-- 桜色の左引用線（PC） -->
+          <blockquote class="relative md:pl-6 md:border-l-4 md:border-sakura-300">
+            <p class="font-heading text-xl md:text-2xl font-semibold text-sakura-900 leading-relaxed mb-4">
+              「地域と人をつなぐ仕組み」をつくることを目的に活動しています。
+            </p>
+            <p class="text-sm md:text-base text-gray-600 leading-relaxed">
+              私たちは、イベントという"非日常の場"を通じて、ハンディキャップのある方が社会と関わり、地域の一員として参加できる環境をつくっています。
+            </p>
+          </blockquote>
+          <div class="mt-8">
+            <a
+              href="/about"
+              class="inline-flex items-center gap-2 px-6 py-3 rounded-lg border-2 border-sakura-300
+                     text-sakura-700 font-semibold text-sm hover:bg-sakura-50 transition-colors"
+            >
+              代表挨拶を読む
+              <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
 </Layout>

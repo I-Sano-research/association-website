@@ -1,0 +1,150 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const events = await getCollection('events');
+  return events.map(event => ({
+    params: { slug: event.data.slug },
+    props:  { event },
+  }));
+}
+
+const { event } = Astro.props;
+const { Content } = await render(event);
+
+// ── 日付フォーマット ──────────────────────────────────────────────
+const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'] as const;
+const date = event.data.date;
+const formattedDate = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日（${WEEKDAYS[date.getDay()]}）`;
+
+// ── ステータス表示 ────────────────────────────────────────────────
+const isUpcoming = event.data.status === 'upcoming' && event.data.date >= new Date();
+const badgeLabel = isUpcoming ? '開催予定' : '開催済み';
+const badgeClass = isUpcoming
+  ? 'bg-accent-100 text-accent-700 border border-accent-300'
+  : 'bg-gray-100 text-gray-500 border border-gray-200';
+---
+
+<Layout
+  title={event.data.title}
+  description={event.data.summary}
+  showCTA={true}
+>
+  <article class="max-w-3xl mx-auto px-4 md:px-8 py-14">
+
+    <!-- 戻るリンク -->
+    <a
+      href="/events"
+      class="inline-flex items-center gap-1.5 text-sm text-sakura-600 hover:text-sakura-800 transition-colors mb-10"
+    >
+      <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      イベント一覧に戻る
+    </a>
+
+    <!-- ステータスバッジ -->
+    <span class:list={['inline-block text-xs font-medium px-2.5 py-0.5 rounded-full mb-4', badgeClass]}>
+      {badgeLabel}
+    </span>
+
+    <!-- イベント名 -->
+    <h1 class="font-heading text-2xl md:text-3xl font-semibold text-sakura-900 leading-snug mb-6">
+      {event.data.title}
+    </h1>
+
+    <!-- メタ情報 -->
+    <dl class="flex flex-col sm:flex-row gap-3 sm:gap-8 text-sm text-gray-600 mb-8 pb-8 border-b border-gray-100">
+      <div class="flex items-start gap-2">
+        <svg class="w-4 h-4 mt-0.5 shrink-0 text-sakura-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <div>
+          <dt class="sr-only">開催日</dt>
+          <dd>{formattedDate}</dd>
+        </div>
+      </div>
+      <div class="flex items-start gap-2">
+        <svg class="w-4 h-4 mt-0.5 shrink-0 text-sakura-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>
+        </svg>
+        <div>
+          <dt class="sr-only">開催場所</dt>
+          <dd>
+            {event.data.location}
+            {event.data.venue && <span class="text-gray-400">・{event.data.venue}</span>}
+          </dd>
+        </div>
+      </div>
+    </dl>
+
+    <!-- メイン画像 -->
+    {event.data.image && (
+      <div class="rounded-2xl overflow-hidden mb-10 aspect-video bg-sakura-50">
+        <img
+          src={event.data.image}
+          alt={event.data.title}
+          width="768"
+          height="432"
+          class="w-full h-full object-cover"
+          loading="eager"
+        />
+      </div>
+    )}
+
+    <!-- 本文（.md body） -->
+    <div class="prose prose-sakura max-w-none">
+      <Content />
+    </div>
+
+    <!-- 下部 戻るリンク -->
+    <div class="mt-14 pt-8 border-t border-gray-100">
+      <a
+        href="/events"
+        class="inline-flex items-center gap-1.5 text-sm text-sakura-600 hover:text-sakura-800 transition-colors"
+      >
+        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        イベント一覧に戻る
+      </a>
+    </div>
+
+  </article>
+</Layout>
+
+<style>
+  /* prose スタイル — Tailwind Typography プラグインなしで最低限のリッチテキスト整形 */
+  .prose-sakura :global(p) {
+    margin-bottom: 1.25rem;
+    line-height: 1.85;
+    color: #374151;
+  }
+  .prose-sakura :global(h2) {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-sakura-900);
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .prose-sakura :global(ul),
+  .prose-sakura :global(ol) {
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+    color: #374151;
+  }
+  .prose-sakura :global(li) {
+    margin-bottom: 0.4rem;
+    line-height: 1.8;
+  }
+  .prose-sakura :global(a) {
+    color: var(--color-sakura-600);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .prose-sakura :global(a:hover) {
+    color: var(--color-sakura-800);
+  }
+</style>

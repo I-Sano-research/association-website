@@ -1,0 +1,44 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="送信完了"
+  description="お問い合わせを受け付けました。"
+  showCTA={false}
+>
+  <div class="min-h-[60dvh] flex items-center justify-center px-4 py-20">
+    <div class="max-w-md w-full text-center">
+
+      <!-- チェックマークアイコン -->
+      <div class="mx-auto mb-8 w-20 h-20 rounded-full bg-nature-100 flex items-center justify-center" aria-hidden="true">
+        <svg class="w-10 h-10 text-nature-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+
+      <h1 class="font-heading text-2xl md:text-3xl font-semibold text-sakura-900 mb-4">
+        お問い合わせありがとうございます
+      </h1>
+      <p class="text-base text-gray-600 leading-relaxed mb-2">
+        内容を確認のうえ、ご連絡いたします。
+      </p>
+      <p class="text-sm text-gray-500 leading-relaxed mb-10">
+        通常3営業日以内にご返信いたします。<br />
+        しばらくお待ちくださいますようお願い申し上げます。
+      </p>
+
+      <a
+        href="/"
+        class="inline-flex items-center gap-2 px-7 py-3 rounded-lg bg-sakura-500 text-white font-semibold text-sm
+               hover:bg-sakura-600 transition-colors focus-visible:outline focus-visible:outline-2
+               focus-visible:outline-offset-2 focus-visible:outline-sakura-500"
+      >
+        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        トップページへ戻る
+      </a>
+    </div>
+  </div>
+</Layout>

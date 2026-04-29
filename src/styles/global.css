@@ -1,0 +1,102 @@
+/* Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@400;600;700&display=swap");
+
+@import "tailwindcss";
+
+/* ==========================================================
+   カラーパレット & フォント定義
+   Tailwind v4 では tailwind.config.mjs の代わりに
+   @theme ブロックで CSS カスタムプロパティとして定義する
+   ========================================================== */
+@theme {
+  /* -------------------------------------------------------
+     sakura — メインカラー（桜色ピンク）
+     法人・行政向けに品のある落ち着いたトーン
+     ------------------------------------------------------- */
+  --color-sakura-50:  #fdf2f5;
+  --color-sakura-100: #fae4ec;
+  --color-sakura-200: #f5c9d8;
+  --color-sakura-300: #eda3bb;
+  --color-sakura-400: #e07296;
+  --color-sakura-500: #d14f74;   /* メインカラー */
+  --color-sakura-600: #b83d62;
+  --color-sakura-700: #952f50;
+  --color-sakura-800: #782540;
+  --color-sakura-900: #5a1d31;
+
+  /* -------------------------------------------------------
+     nature — サブカラー（セージグリーン）
+     桜色を引き立てる落ち着いた緑
+     ------------------------------------------------------- */
+  --color-nature-50:  #f2f7f3;
+  --color-nature-100: #e2ede5;
+  --color-nature-200: #c4dbca;
+  --color-nature-300: #9ac2a5;
+  --color-nature-400: #6aa37d;
+  --color-nature-500: #4a8a60;   /* サブメインカラー */
+  --color-nature-600: #3a7050;
+  --color-nature-700: #2e5940;
+  --color-nature-800: #264633;
+  --color-nature-900: #1e3528;
+
+  /* -------------------------------------------------------
+     accent — CTAアクセントカラー（温かみのあるアンバー）
+     桜色・グリーンと対比し、ボタン・強調に使用
+     ------------------------------------------------------- */
+  --color-accent-50:  #fdf7ee;
+  --color-accent-100: #faecd3;
+  --color-accent-200: #f4d6a0;
+  --color-accent-300: #ecba5e;
+  --color-accent-400: #e39b28;
+  --color-accent-500: #c97f10;   /* CTAメインカラー */
+  --color-accent-600: #a86609;
+  --color-accent-700: #855009;
+  --color-accent-800: #673e0c;
+  --color-accent-900: #4e2f0e;
+
+  /* -------------------------------------------------------
+     フォント
+     ------------------------------------------------------- */
+  --font-sans:    "Noto Sans JP", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Shippori Mincho", ui-serif, Georgia, serif;
+}
+
+/* ==========================================================
+   ベーススタイル
+   ========================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-sans);
+  line-height: 1.75;
+  color: #1a1a1a;
+  background-color: #ffffff;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

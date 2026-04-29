@@ -1,0 +1,126 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import supportData from '../data/support.json';
+
+// アイコンSVGをidで切り替え（アイコンライブラリ導入前のインライン仮実装）
+const iconPaths: Record<string, string> = {
+  handshake:
+    'M4 12h3l3 7 4-14 3 7h3 M7 12c0 0 2-2 5-2s5 2 5 2',
+  'map-pin':
+    'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z M14.5 9a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z',
+  users:
+    'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75 M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+};
+
+const typeLabels: Record<string, string> = {
+  request: '地域活性化支援の依頼',
+  venue:   '活動場所の提供',
+  join:    '活動への参加',
+};
+---
+
+<Layout
+  title="協力・参加のご案内"
+  description="桜の風の活動への関わり方をご案内します。支援の依頼・活動場所の提供・活動参加の3つの窓口があります。"
+  showCTA={false}
+>
+
+  <!-- ページヒーロー -->
+  <section class="bg-gradient-to-b from-sakura-50 to-white pt-14 pb-10 px-4 md:px-8 text-center">
+    <p class="text-xs font-semibold tracking-widest text-sakura-400 uppercase mb-3">Support & Join</p>
+    <h1 class="font-heading text-3xl md:text-4xl font-semibold text-sakura-900">協力・参加のご案内</h1>
+    <div class="mt-4 flex justify-center">
+      <span class="block w-14 h-1 rounded-full bg-sakura-300"></span>
+    </div>
+  </section>
+
+  <!-- リード文 -->
+  <div class="max-w-3xl mx-auto px-4 md:px-8 pt-10 pb-2 text-center">
+    <p class="text-base md:text-lg text-gray-600 leading-relaxed">
+      桜の風の活動には、3つの関わり方があります。
+    </p>
+  </div>
+
+  <!-- 3セクション -->
+  <div class="max-w-4xl mx-auto px-4 md:px-8 pb-24 mt-16 space-y-32">
+    {supportData.map((item, index) => (
+      <section aria-labelledby={item.id}>
+        <!-- SectionHeading に id を明示指定（アンカーリンク用 / scroll-mt-24 で sticky ヘッダー分を吸収） -->
+        <SectionHeading
+          title={item.heading}
+          id={item.id}
+          variant="default"
+        />
+
+        <div class="flex flex-col md:flex-row gap-10 md:gap-16 items-start mb-14">
+
+          <!-- アイコン -->
+          <div class="shrink-0 w-16 h-16 rounded-2xl bg-sakura-100 flex items-center justify-center" aria-hidden="true">
+            <svg
+              class="w-8 h-8 text-sakura-500"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d={iconPaths[item.icon] ?? 'M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0'} />
+            </svg>
+          </div>
+
+          <div class="flex-1 space-y-10">
+
+            <!-- 対象者 -->
+            <div>
+              <p class="text-xs font-semibold tracking-widest text-sakura-400 uppercase mb-2">対象者</p>
+              <p class="text-base text-gray-700 leading-relaxed">{item.target}</p>
+            </div>
+
+            <!-- 説明 -->
+            <div>
+              <p class="text-xs font-semibold tracking-widest text-sakura-400 uppercase mb-2">関わり方</p>
+              <p class="text-base text-gray-700 leading-relaxed">{item.description}</p>
+            </div>
+
+            <!-- 相談例 -->
+            <div>
+              <p class="text-xs font-semibold tracking-widest text-sakura-400 uppercase mb-3">こんなご相談が多いです</p>
+              <ul class="space-y-2">
+                {item.examples.map(example => (
+                  <li class="flex items-start gap-2 text-sm text-gray-600">
+                    <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-sakura-400 shrink-0" aria-hidden="true"></span>
+                    {example}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <!-- CTAボタン -->
+            <div class="pt-4">
+              <a
+                href={`/contact?type=${item.contactType}`}
+                class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-accent-500 text-white font-semibold text-base
+                       hover:bg-accent-600 transition-colors focus-visible:outline focus-visible:outline-2
+                       focus-visible:outline-offset-2 focus-visible:outline-accent-500"
+              >
+                {typeLabels[item.contactType] ?? 'お問い合わせ'}について相談する
+                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+        {index < supportData.length - 1 && (
+          <hr class="border-sakura-100" />
+        )}
+      </section>
+    ))}
+  </div>
+
+</Layout>
