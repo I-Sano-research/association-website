@@ -53,8 +53,7 @@ src/
 │   ├── about.astro
 │   ├── activities.astro
 │   ├── events/
-│   │   ├── index.astro
-│   │   └── [slug].astro
+│   │   └── index.astro    # イベント一覧（ギャラリー・カード・タイムライン）
 │   ├── support.astro
 │   ├── contact.astro
 │   └── privacy.astro
@@ -63,9 +62,11 @@ src/
 │   ├── events/         # 1イベント1ファイル
 │   └── activities/     # 1活動軸1ファイル
 ├── data/
-│   ├── site.config.json  # サイト共通設定
-│   ├── stats.json        # 実績数字
-│   └── support.json      # 3導線データ（T-02, S-02 共有）
+│   ├── site.config.json    # サイト共通設定
+│   ├── stats.json          # 実績数字
+│   ├── support.json        # 3導線データ（T-02, S-02 共有）
+│   ├── hero-images.json    # トップページFV スライドショー画像リスト
+│   └── event-gallery.json  # /events ページ ギャラリースライドショー画像リスト
 └── styles/
     └── global.css
 ```
@@ -112,16 +113,23 @@ src/
 - タブレット左右パディング：32px
 - ファーストビュー等、全幅表示が必要なセクションはブレイクアウト可
 
-## ページ構成（全7ページ + イベント詳細 + サンクスページ）
+## ページ構成（全7ページ + サンクスページ）
 
 | パス | ページ名 |
 |------|---------|
 | `/` | トップページ |
 | `/about` | 桜の風について |
 | `/activities` | 活動内容 |
-| `/events` | イベント情報 |
-| `/events/[slug]` | イベント詳細 |
+| `/events` | イベント情報（ギャラリー・今後のイベント・タイムライン） |
 | `/support` | 協力・参加のご案内 |
 | `/contact` | お問い合わせ |
 | `/contact/thanks` | 送信完了 |
 | `/privacy` | プライバシーポリシー |
+
+## イベント設計メモ
+
+- イベント詳細ページ（`/events/[slug]`）は廃止。`EventCard` はリンクなし表示のみ。
+- `EventCard` の `slug` prop は削除済み。
+- `/events` ページ：上部にギャラリースライドショー（`event-gallery.json`）、今後のイベントはカード形式、過去のイベントはタイムライン形式。
+- トップページFVは `hero-images.json` の画像をクロスフェードで自動切り替え（4秒）。画像が1枚以下の場合は静止背景にフォールバック。
+- スライドショーはCSS transition（opacity）＋ 最小限のインラインJSで実装。

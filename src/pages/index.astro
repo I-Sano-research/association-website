@@ -1,11 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
-import EventCard from '../components/EventCard.astro';
 import { getCollection } from 'astro:content';
-import siteConfig from '../data/site.config.json';
 import supportData from '../data/support.json';
 import statsData from '../data/stats.json';
+import heroImages from '../data/hero-images.json';
+
+const isHeroSlideshow = heroImages.length > 1;
 
 // ── T-03 活動ハイライト：priority 上位3件 ──────────────────────────
 const allActivities = await getCollection('activities');
@@ -66,15 +67,32 @@ const activityIcons: Record<string, string> = {
     class="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-sakura-900"
     aria-label="ファーストビュー"
   >
-    <!-- 背景写真 -->
-    <img
-      src="/images/hero-bg.jpg"
-      alt=""
-      aria-hidden="true"
-      class="absolute inset-0 w-full h-full object-cover object-center"
-      loading="eager"
-      fetchpriority="high"
-    />
+    <!-- 背景スライドショー（1枚以下のときは単一背景にフォールバック） -->
+    <div id="hero-slideshow" class="absolute inset-0" aria-hidden="true">
+      {isHeroSlideshow ? (
+        heroImages.map((img, i) => (
+          <img
+            src={img.src}
+            alt=""
+            aria-hidden="true"
+            class:list={['hero-slide absolute inset-0 w-full h-full object-cover', i === 0 ? 'is-active' : '']}
+            style={`object-position: ${img.pos ?? 'center center'};`}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={i === 0 ? 'high' : undefined}
+          />
+        ))
+      ) : (
+        <img
+          src={heroImages[0]?.src ?? '/images/hero-bg.jpg'}
+          alt=""
+          aria-hidden="true"
+          class="absolute inset-0 w-full h-full object-cover"
+          style={`object-position: ${heroImages[0]?.pos ?? 'center center'};`}
+          loading="eager"
+          fetchpriority="high"
+        />
+      )}
+    </div>
 
     <!-- オーバーレイ：写真上に重ねて文字を読みやすくする（下方向に少し濃くなるグラデーション） -->
     <div
@@ -232,26 +250,30 @@ const activityIcons: Record<string, string> = {
   <section class="py-20 px-4 md:px-8 bg-white" aria-labelledby="events-heading">
     <div class="max-w-6xl mx-auto">
       <SectionHeading
-        title="イベント情報"
-        subtitle={upcoming.length > 0 ? '今後の開催予定イベントをご確認ください。' : '直近のイベントレポートです。'}
+        title="直近のイベント"
         id="events-heading"
         variant="hero"
       />
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
-        {featuredEvents.map(event => (
-          <EventCard
-            title={event.data.title}
-            date={event.data.date}
-            location={event.data.location}
-            venue={event.data.venue}
-            status={resolveStatus(event.data.status, event.data.date)}
-            image={event.data.image}
-            summary={event.data.summary}
-            slug={event.data.slug}
-          />
-        ))}
-      </div>
+      <ul class="max-w-2xl mx-auto divide-y divide-sakura-100 rounded-2xl border border-sakura-100 overflow-hidden">
+        {featuredEvents.map(event => {
+          const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'] as const;
+          const d = event.data.date;
+          const dateStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${WEEKDAYS[d.getDay()]}）`;
+          const isUpcoming = resolveStatus(event.data.status, event.data.date) === 'upcoming';
+          return (
+            <li class="flex items-center gap-4 px-6 py-5 bg-white">
+              <span class:list={['shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full', isUpcoming ? 'bg-accent-100 text-accent-700 border border-accent-300' : 'bg-gray-100 text-gray-500 border border-gray-200']}>
+                {isUpcoming ? '開催予定' : '開催済み'}
+              </span>
+              <div class="flex-1 min-w-0">
+                <p class="font-heading font-semibold text-sakura-900 text-sm leading-snug truncate">{event.data.title}</p>
+                <p class="text-xs text-gray-500 mt-0.5">{dateStr}　{event.data.location}</p>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
 
       <div class="mt-10 text-center">
         <a
@@ -360,3 +382,28 @@ const activityIcons: Record<string, string> = {
   </section>
 
 </Layout>
+
+<style>
+  .hero-slide {
+    opacity: 0;
+    transition: opacity 0.9s ease-in-out;
+  }
+  .hero-slide.is-active {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  const heroSS = document.getElementById('hero-slideshow');
+  if (heroSS) {
+    const slides = heroSS.querySelectorAll<HTMLElement>('.hero-slide');
+    if (slides.length > 1) {
+      let current = 0;
+      setInterval(() => {
+        slides[current].classList.remove('is-active');
+        current = (current + 1) % slides.length;
+        slides[current].classList.add('is-active');
+      }, 4000);
+    }
+  }
+</script>

@@ -3,12 +3,11 @@ import Layout from '../../layouts/Layout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
 import EventCard from '../../components/EventCard.astro';
 import { getCollection } from 'astro:content';
+import galleryImages from '../../data/event-gallery.json';
 
 const allEvents = await getCollection('events');
 const now = new Date();
 
-// ── status 判定：status フィールドを正とする。
-//    ただし status==="upcoming" かつ date が過去の場合は finished 扱い。
 function resolveStatus(status: 'upcoming' | 'finished', date: Date): 'upcoming' | 'finished' {
   if (status === 'upcoming' && date < now) return 'finished';
   return status;
@@ -16,11 +15,20 @@ function resolveStatus(status: 'upcoming' | 'finished', date: Date): 'upcoming' 
 
 const upcoming = allEvents
   .filter(e => resolveStatus(e.data.status, e.data.date) === 'upcoming')
-  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime()); // 昇順
+  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
 
 const finished = allEvents
   .filter(e => resolveStatus(e.data.status, e.data.date) === 'finished')
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime()); // 降順
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+function formatTimelineDate(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}.${m}.${d}`;
+}
+
+const hasGallery = galleryImages.length > 1;
 ---
 
 <Layout
@@ -40,7 +48,47 @@ const finished = allEvents
 
   <div class="max-w-6xl mx-auto px-4 md:px-8 pb-20 space-y-20">
 
-    <!-- 今後のイベント -->
+    <!-- ═══════════════════════════════════════════════════
+         活動の様子（ギャラリースライドショー）
+         ═══════════════════════════════════════════════════ -->
+    {galleryImages.length > 0 && (
+      <section aria-labelledby="gallery-heading">
+        <SectionHeading
+          title="活動の様子"
+          id="gallery-heading"
+          variant="default"
+        />
+        <div
+          id="event-gallery"
+          class="relative overflow-hidden rounded-2xl bg-sakura-100"
+          style="aspect-ratio: 16 / 9; max-height: 480px;"
+          role="img"
+          aria-label="活動の様子スライドショー"
+        >
+          {galleryImages.map((img, i) => (
+            <img
+              src={img.src}
+              alt={img.alt}
+              class:list={['gallery-slide absolute inset-0 w-full h-full object-cover', i === 0 ? 'is-active' : '']}
+              style={`object-position: ${img.pos};`}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              aria-hidden={i !== 0 ? 'true' : undefined}
+            />
+          ))}
+        </div>
+        {hasGallery && (
+          <div class="flex justify-center gap-1.5 mt-3" id="gallery-dots" aria-hidden="true">
+            {galleryImages.map((_, i) => (
+              <span class:list={['gallery-dot block w-2 h-2 rounded-full transition-colors duration-300', i === 0 ? 'bg-sakura-400' : 'bg-sakura-200']} />
+            ))}
+          </div>
+        )}
+      </section>
+    )}
+
+    <!-- ═══════════════════════════════════════════════════
+         今後のイベント
+         ═══════════════════════════════════════════════════ -->
     <section aria-labelledby="upcoming-heading">
       <SectionHeading
         title="今後のイベント"
@@ -59,7 +107,6 @@ const finished = allEvents
               status="upcoming"
               image={event.data.image}
               summary={event.data.summary}
-              slug={event.data.slug}
             />
           ))}
         </div>
@@ -82,7 +129,9 @@ const finished = allEvents
       )}
     </section>
 
-    <!-- これまでのイベント -->
+    <!-- ═══════════════════════════════════════════════════
+         これまでのイベント（タイムライン）
+         ═══════════════════════════════════════════════════ -->
     <section aria-labelledby="finished-heading">
       <SectionHeading
         title="これまでのイベント"
@@ -91,19 +140,79 @@ const finished = allEvents
       />
 
       {finished.length > 0 ? (
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {finished.map(event => (
-            <EventCard
-              title={event.data.title}
-              date={event.data.date}
-              location={event.data.location}
-              venue={event.data.venue}
-              status="finished"
-              image={event.data.image}
-              summary={event.data.summary}
-              slug={event.data.slug}
-            />
-          ))}
+        <div class="relative">
+          <!-- 縦ライン（モバイル） -->
+          <div class="md:hidden absolute top-0 bottom-0 left-6 w-0.5 bg-sakura-200" aria-hidden="true"></div>
+          <!-- 縦ライン（PC：日付列の右端） -->
+          <div class="hidden md:block absolute top-0 bottom-0 w-0.5 bg-sakura-200" style="left: 188px;" aria-hidden="true"></div>
+
+          <ol class="space-y-8">
+            {finished.map(event => (
+              <li class="relative">
+                <!-- PC レイアウト：日付（左）＋ ドット ＋ 詳細（右） -->
+                <div class="md:grid md:gap-0" style="grid-template-columns: 180px 1fr;">
+
+                  <!-- 日付（PCのみ、左カラム） -->
+                  <div class="hidden md:flex items-start justify-end pr-6 pt-1">
+                    <time
+                      datetime={event.data.date.toISOString().slice(0, 10)}
+                      class="text-sm font-mono tabular-nums text-sakura-500 leading-none"
+                    >
+                      {formatTimelineDate(event.data.date)}
+                    </time>
+                  </div>
+
+                  <!-- コンテンツ列（モバイルは pl-14 でライン右へ、PCは pl-8） -->
+                  <div class="pl-14 md:pl-8">
+                    <!-- モバイルのみ日付 -->
+                    <time
+                      datetime={event.data.date.toISOString().slice(0, 10)}
+                      class="md:hidden block text-xs font-mono tabular-nums text-sakura-500 mb-1.5 leading-none"
+                    >
+                      {formatTimelineDate(event.data.date)}
+                    </time>
+
+                    <div class="flex gap-3 items-start">
+                      <!-- サムネイル（image フィールドがある場合のみ） -->
+                      {event.data.image && (
+                        <img
+                          src={event.data.image}
+                          alt={event.data.title}
+                          class="w-16 h-16 rounded-lg object-cover shrink-0"
+                          loading="lazy"
+                        />
+                      )}
+
+                      <div>
+                        <h3 class="font-heading text-base font-semibold text-sakura-900 leading-snug mb-1">
+                          {event.data.title}
+                        </h3>
+                        <p class="text-sm text-gray-500 flex items-center gap-1">
+                          <svg class="w-3.5 h-3.5 shrink-0 text-sakura-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>
+                          </svg>
+                          {event.data.location}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ドット（モバイル：左ライン上、PC：日付列と詳細列の境界） -->
+                <div
+                  class="absolute top-1 w-3 h-3 rounded-full bg-sakura-400 border-2 border-white ring-1 ring-sakura-200"
+                  style="left: 18px;"
+                  aria-hidden="true"
+                ></div>
+                <!-- PC ドット（上のドットを PC で上書き位置変更） -->
+                <div
+                  class="hidden md:block absolute top-1 w-3 h-3 rounded-full bg-sakura-400 border-2 border-white ring-1 ring-sakura-200"
+                  style="left: 182px;"
+                  aria-hidden="true"
+                ></div>
+              </li>
+            ))}
+          </ol>
         </div>
       ) : (
         <p class="text-gray-500 text-sm">まだ活動レポートはありません。</p>
@@ -112,3 +221,33 @@ const finished = allEvents
 
   </div>
 </Layout>
+
+<style>
+  .gallery-slide {
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+  }
+  .gallery-slide.is-active {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  const gallery = document.getElementById('event-gallery');
+  if (gallery) {
+    const slides = gallery.querySelectorAll<HTMLElement>('.gallery-slide');
+    const dots = document.querySelectorAll<HTMLElement>('.gallery-dot');
+    if (slides.length > 1) {
+      let current = 0;
+      setInterval(() => {
+        slides[current].classList.remove('is-active');
+        slides[current].setAttribute('aria-hidden', 'true');
+        dots[current]?.classList.replace('bg-sakura-400', 'bg-sakura-200');
+        current = (current + 1) % slides.length;
+        slides[current].classList.add('is-active');
+        slides[current].removeAttribute('aria-hidden');
+        dots[current]?.classList.replace('bg-sakura-200', 'bg-sakura-400');
+      }, 3500);
+    }
+  }
+</script>
