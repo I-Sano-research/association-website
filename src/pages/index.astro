@@ -6,8 +6,6 @@ import supportData from '../data/support.json';
 import statsData from '../data/stats.json';
 import heroImages from '../data/hero-images.json';
 
-const isHeroSlideshow = heroImages.length > 1;
-
 // ── T-03 活動ハイライト：priority 上位3件 ──────────────────────────
 const allActivities = await getCollection('activities');
 const topActivities = [...allActivities]
@@ -69,29 +67,12 @@ const activityIcons: Record<string, string> = {
   >
     <!-- 背景スライドショー（1枚以下のときは単一背景にフォールバック） -->
     <div id="hero-slideshow" class="absolute inset-0" aria-hidden="true">
-      {isHeroSlideshow ? (
-        heroImages.map((img, i) => (
-          <img
-            src={img.src}
-            alt=""
-            aria-hidden="true"
-            class:list={['hero-slide absolute inset-0 w-full h-full object-cover', i === 0 ? 'is-active' : '']}
-            style={`object-position: ${img.pos ?? 'center center'};`}
-            loading={i === 0 ? 'eager' : 'lazy'}
-            fetchpriority={i === 0 ? 'high' : undefined}
-          />
-        ))
-      ) : (
-        <img
-          src={heroImages[0]?.src ?? '/images/hero-bg.jpg'}
-          alt=""
-          aria-hidden="true"
-          class="absolute inset-0 w-full h-full object-cover"
-          style={`object-position: ${heroImages[0]?.pos ?? 'center center'};`}
-          loading="eager"
-          fetchpriority="high"
+      {heroImages.map((img, i) => (
+        <div
+          class:list={['hero-slide absolute inset-0', i === 0 ? 'is-active' : '']}
+          style={`background-image: url('${img.src}'); background-size: cover; background-position: ${img.pos};`}
         />
-      )}
+      ))}
     </div>
 
     <!-- オーバーレイ：写真上に重ねて文字を読みやすくする（下方向に少し濃くなるグラデーション） -->
@@ -394,10 +375,20 @@ const activityIcons: Record<string, string> = {
 </style>
 
 <script>
+  function shuffle<T>(arr: T[]): T[] {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
   const heroSS = document.getElementById('hero-slideshow');
   if (heroSS) {
-    const slides = heroSS.querySelectorAll<HTMLElement>('.hero-slide');
+    const slides = shuffle(Array.from(heroSS.querySelectorAll<HTMLElement>('.hero-slide')));
     if (slides.length > 1) {
+      slides.forEach(s => s.classList.remove('is-active'));
+      slides[0].classList.add('is-active');
       let current = 0;
       setInterval(() => {
         slides[current].classList.remove('is-active');

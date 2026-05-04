@@ -66,13 +66,9 @@ const hasGallery = galleryImages.length > 1;
           aria-label="活動の様子スライドショー"
         >
           {galleryImages.map((img, i) => (
-            <img
-              src={img.src}
-              alt={img.alt}
-              class:list={['gallery-slide absolute inset-0 w-full h-full object-cover', i === 0 ? 'is-active' : '']}
-              style={`object-position: ${img.pos};`}
-              loading={i === 0 ? 'eager' : 'lazy'}
-              aria-hidden={i !== 0 ? 'true' : undefined}
+            <div
+              class:list={['gallery-slide absolute inset-0', i === 0 ? 'is-active' : '']}
+              style={`background-image: url('${img.src}'); background-size: cover; background-position: ${img.pos};`}
             />
           ))}
         </div>
@@ -233,19 +229,29 @@ const hasGallery = galleryImages.length > 1;
 </style>
 
 <script>
+  function shuffle<T>(arr: T[]): T[] {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
   const gallery = document.getElementById('event-gallery');
   if (gallery) {
-    const slides = gallery.querySelectorAll<HTMLElement>('.gallery-slide');
-    const dots = document.querySelectorAll<HTMLElement>('.gallery-dot');
+    const slides = shuffle(Array.from(gallery.querySelectorAll<HTMLElement>('.gallery-slide')));
+    const dots = Array.from(document.querySelectorAll<HTMLElement>('.gallery-dot'));
     if (slides.length > 1) {
+      slides.forEach(s => s.classList.remove('is-active'));
+      dots.forEach(d => d.classList.replace('bg-sakura-400', 'bg-sakura-200'));
+      slides[0].classList.add('is-active');
+      dots[0]?.classList.replace('bg-sakura-200', 'bg-sakura-400');
       let current = 0;
       setInterval(() => {
         slides[current].classList.remove('is-active');
-        slides[current].setAttribute('aria-hidden', 'true');
         dots[current]?.classList.replace('bg-sakura-400', 'bg-sakura-200');
         current = (current + 1) % slides.length;
         slides[current].classList.add('is-active');
-        slides[current].removeAttribute('aria-hidden');
         dots[current]?.classList.replace('bg-sakura-200', 'bg-sakura-400');
       }, 3500);
     }
