@@ -278,19 +278,19 @@ const activityIcons: Record<string, string> = {
        ═══════════════════════════════════════════════════ -->
   <section class="py-16 px-4 md:px-8 bg-sakura-50" aria-label="実績">
     <div class="max-w-6xl mx-auto">
-      <div class="grid grid-cols-3 gap-6 md:gap-12">
+      <div class="grid grid-cols-3 gap-3 md:gap-12">
         {statsData.map(stat => (
-          <div class="text-center">
+          <div class="text-center min-w-0">
             <p class="font-heading font-semibold text-sakura-900 leading-none mb-2">
               {'prefix' in stat && stat.prefix && (
                 <span class="block text-xs text-sakura-400 font-sans font-normal mb-1 tracking-wide">
                   {stat.prefix}
                 </span>
               )}
-              <span class="text-4xl md:text-5xl">{stat.value}</span>
-              <span class="text-lg md:text-2xl ml-0.5">{stat.suffix}</span>
+              <span class="text-2xl md:text-5xl">{stat.value}</span>
+              <span class="text-sm md:text-2xl ml-0.5">{stat.suffix}</span>
             </p>
-            <p class="text-xs md:text-sm text-gray-500 mt-2">{stat.label}</p>
+            <p class="text-xs md:text-sm text-gray-500 mt-2 leading-snug">{stat.label}</p>
           </div>
         ))}
       </div>
