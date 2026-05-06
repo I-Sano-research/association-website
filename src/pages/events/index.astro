@@ -247,9 +247,9 @@ const hasGallery = galleryImages.length > 1;
   if (gallery) {
     const allSlides = Array.from(gallery.querySelectorAll<HTMLElement>('.gallery-slide'));
     const dots = Array.from(document.querySelectorAll<HTMLElement>('.gallery-dot'));
+    const htmlFirst = allSlides[0];
     const slides = shuffle(allSlides);
     if (slides.length > 1) {
-      const htmlFirst = allSlides[0];
       const newFirst = slides[0];
       if (newFirst !== htmlFirst) {
         htmlFirst.classList.add('is-prev');

@@ -392,9 +392,9 @@ const activityIcons: Record<string, string> = {
   const heroSS = document.getElementById('hero-slideshow');
   if (heroSS) {
     const allSlides = Array.from(heroSS.querySelectorAll<HTMLElement>('.hero-slide'));
+    const htmlFirst = allSlides[0];
     const slides = shuffle(allSlides);
     if (slides.length > 1) {
-      const htmlFirst = allSlides[0];
       const newFirst = slides[0];
       if (newFirst !== htmlFirst) {
         htmlFirst.classList.add('is-prev');
