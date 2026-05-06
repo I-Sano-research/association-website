@@ -225,6 +225,12 @@ const hasGallery = galleryImages.length > 1;
   }
   .gallery-slide.is-active {
     opacity: 1;
+    z-index: 1;
+  }
+  .gallery-slide.is-prev {
+    opacity: 1;
+    z-index: 0;
+    transition: none;
   }
 </style>
 
@@ -239,20 +245,21 @@ const hasGallery = galleryImages.length > 1;
 
   const gallery = document.getElementById('event-gallery');
   if (gallery) {
-    const slides = shuffle(Array.from(gallery.querySelectorAll<HTMLElement>('.gallery-slide')));
+    const allSlides = Array.from(gallery.querySelectorAll<HTMLElement>('.gallery-slide'));
     const dots = Array.from(document.querySelectorAll<HTMLElement>('.gallery-dot'));
+    const firstActive = allSlides.find(s => s.classList.contains('is-active')) ?? allSlides[0];
+    const slides = [firstActive, ...shuffle(allSlides.filter(s => s !== firstActive))];
     if (slides.length > 1) {
-      slides.forEach(s => s.classList.remove('is-active'));
-      dots.forEach(d => d.classList.replace('bg-sakura-400', 'bg-sakura-200'));
-      slides[0].classList.add('is-active');
-      dots[0]?.classList.replace('bg-sakura-200', 'bg-sakura-400');
       let current = 0;
       setInterval(() => {
-        slides[current].classList.remove('is-active');
+        const prev = slides[current];
         dots[current]?.classList.replace('bg-sakura-400', 'bg-sakura-200');
         current = (current + 1) % slides.length;
+        prev.classList.remove('is-active');
+        prev.classList.add('is-prev');
         slides[current].classList.add('is-active');
         dots[current]?.classList.replace('bg-sakura-200', 'bg-sakura-400');
+        setTimeout(() => prev.classList.remove('is-prev'), 850);
       }, 3500);
     }
   }

@@ -371,6 +371,12 @@ const activityIcons: Record<string, string> = {
   }
   .hero-slide.is-active {
     opacity: 1;
+    z-index: 1;
+  }
+  .hero-slide.is-prev {
+    opacity: 1;
+    z-index: 0;
+    transition: none;
   }
 </style>
 
@@ -385,15 +391,18 @@ const activityIcons: Record<string, string> = {
 
   const heroSS = document.getElementById('hero-slideshow');
   if (heroSS) {
-    const slides = shuffle(Array.from(heroSS.querySelectorAll<HTMLElement>('.hero-slide')));
+    const allSlides = Array.from(heroSS.querySelectorAll<HTMLElement>('.hero-slide'));
+    const firstActive = allSlides.find(s => s.classList.contains('is-active')) ?? allSlides[0];
+    const slides = [firstActive, ...shuffle(allSlides.filter(s => s !== firstActive))];
     if (slides.length > 1) {
-      slides.forEach(s => s.classList.remove('is-active'));
-      slides[0].classList.add('is-active');
       let current = 0;
       setInterval(() => {
-        slides[current].classList.remove('is-active');
+        const prev = slides[current];
         current = (current + 1) % slides.length;
+        prev.classList.remove('is-active');
+        prev.classList.add('is-prev');
         slides[current].classList.add('is-active');
+        setTimeout(() => prev.classList.remove('is-prev'), 950);
       }, 4000);
     }
   }
