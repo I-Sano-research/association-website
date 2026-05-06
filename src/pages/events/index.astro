@@ -247,16 +247,23 @@ const hasGallery = galleryImages.length > 1;
   if (gallery) {
     const allSlides = Array.from(gallery.querySelectorAll<HTMLElement>('.gallery-slide'));
     const dots = Array.from(document.querySelectorAll<HTMLElement>('.gallery-dot'));
-    const firstActive = allSlides.find(s => s.classList.contains('is-active')) ?? allSlides[0];
-    const slides = [firstActive, ...shuffle(allSlides.filter(s => s !== firstActive))];
+    const slides = shuffle(allSlides);
     if (slides.length > 1) {
+      const htmlFirst = allSlides[0];
+      const newFirst = slides[0];
+      if (newFirst !== htmlFirst) {
+        htmlFirst.classList.add('is-prev');
+        htmlFirst.classList.remove('is-active');
+        newFirst.classList.add('is-active');
+        setTimeout(() => htmlFirst.classList.remove('is-prev'), 850);
+      }
       let current = 0;
       setInterval(() => {
         const prev = slides[current];
         dots[current]?.classList.replace('bg-sakura-400', 'bg-sakura-200');
         current = (current + 1) % slides.length;
-        prev.classList.remove('is-active');
         prev.classList.add('is-prev');
+        prev.classList.remove('is-active');
         slides[current].classList.add('is-active');
         dots[current]?.classList.replace('bg-sakura-200', 'bg-sakura-400');
         setTimeout(() => prev.classList.remove('is-prev'), 850);

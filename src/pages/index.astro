@@ -392,15 +392,22 @@ const activityIcons: Record<string, string> = {
   const heroSS = document.getElementById('hero-slideshow');
   if (heroSS) {
     const allSlides = Array.from(heroSS.querySelectorAll<HTMLElement>('.hero-slide'));
-    const firstActive = allSlides.find(s => s.classList.contains('is-active')) ?? allSlides[0];
-    const slides = [firstActive, ...shuffle(allSlides.filter(s => s !== firstActive))];
+    const slides = shuffle(allSlides);
     if (slides.length > 1) {
+      const htmlFirst = allSlides[0];
+      const newFirst = slides[0];
+      if (newFirst !== htmlFirst) {
+        htmlFirst.classList.add('is-prev');
+        htmlFirst.classList.remove('is-active');
+        newFirst.classList.add('is-active');
+        setTimeout(() => htmlFirst.classList.remove('is-prev'), 950);
+      }
       let current = 0;
       setInterval(() => {
         const prev = slides[current];
         current = (current + 1) % slides.length;
-        prev.classList.remove('is-active');
         prev.classList.add('is-prev');
+        prev.classList.remove('is-active');
         slides[current].classList.add('is-active');
         setTimeout(() => prev.classList.remove('is-prev'), 950);
       }, 4000);
