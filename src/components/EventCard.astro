@@ -26,9 +26,9 @@ const badgeLabel = isUpcoming ? '開催予定' : '開催済み';
 ---
 
 <article class="flex flex-col rounded-2xl border border-sakura-100 bg-white overflow-hidden shadow-sm">
-  <!-- サムネイル画像 -->
-  <div class="aspect-video bg-sakura-50 overflow-hidden">
-    {image ? (
+  <!-- サムネイル画像（ある場合のみ表示） -->
+  {image && (
+    <div class="aspect-video bg-sakura-50 overflow-hidden">
       <img
         src={image}
         alt={title}
@@ -37,13 +37,8 @@ const badgeLabel = isUpcoming ? '開催予定' : '開催済み';
         class="w-full h-full object-cover"
         loading="lazy"
       />
-    ) : (
-      <div class="w-full h-full flex flex-col items-center justify-center gap-2 text-sakura-200">
-        <span class="w-14 h-14 rounded-full bg-sakura-500 flex items-center justify-center text-white text-xl font-bold select-none">桜</span>
-        <span class="text-xs text-sakura-300">桜の風</span>
-      </div>
-    )}
-  </div>
+    </div>
+  )}
 
   <!-- カード本文 -->
   <div class="flex flex-col flex-1 p-5 gap-3">
@@ -72,6 +67,6 @@ const badgeLabel = isUpcoming ? '開催予定' : '開催済み';
       </div>
     </dl>
 
-    <p class="text-sm text-gray-600 leading-relaxed line-clamp-2 mt-auto">{summary}</p>
+    <p class="text-sm text-gray-600 leading-relaxed mt-auto">{summary}</p>
   </div>
 </article>
