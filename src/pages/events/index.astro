@@ -4,6 +4,7 @@ import SectionHeading from '../../components/SectionHeading.astro';
 import EventCard from '../../components/EventCard.astro';
 import { getCollection } from 'astro:content';
 import galleryImages from '../../data/event-gallery.json';
+import siteConfig from '../../data/site.config.json';
 
 const allEvents = await getCollection('events');
 const now = new Date();
@@ -112,7 +113,7 @@ const hasGallery = galleryImages.length > 1;
             現在、開催予定のイベントはありません。<br />
             最新情報は
             <a
-              href="https://www.instagram.com/"
+              href={siteConfig.social.instagram}
               target="_blank"
               rel="noopener noreferrer"
               class="text-sakura-600 underline underline-offset-2 hover:text-sakura-800 transition-colors"
@@ -124,6 +125,55 @@ const hasGallery = galleryImages.length > 1;
         </div>
       )}
     </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         Instagram 動線バナー
+         ═══════════════════════════════════════════════════ -->
+    {siteConfig.social.instagram && (
+      <section aria-label="Instagram">
+        <a
+          href={siteConfig.social.instagram}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group flex flex-col sm:flex-row items-center justify-center gap-5 rounded-2xl px-8 py-8
+                 bg-gradient-to-br from-[#fdf6ec] to-[#fce4f0]
+                 border border-pink-100 hover:shadow-md transition-shadow duration-200"
+          aria-label="Instagramで最新情報をチェック（新しいタブで開きます）"
+        >
+          <!-- Instagram グラデーションアイコン -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" aria-hidden="true" class="shrink-0">
+            <defs>
+              <radialGradient id="ig-grad-events" cx="30%" cy="107%" r="150%">
+                <stop offset="0%"  stop-color="#fdf497"/>
+                <stop offset="5%"  stop-color="#fdf497"/>
+                <stop offset="45%" stop-color="#fd5949"/>
+                <stop offset="60%" stop-color="#d6249f"/>
+                <stop offset="90%" stop-color="#285AEB"/>
+              </radialGradient>
+            </defs>
+            <rect x="0" y="0" width="24" height="24" rx="5.5" fill="url(#ig-grad-events)"/>
+            <rect x="2.5" y="2.5" width="19" height="19" rx="4" fill="none" stroke="white" stroke-width="1.4"/>
+            <circle cx="12" cy="12" r="4" fill="none" stroke="white" stroke-width="1.4"/>
+            <circle cx="17.3" cy="6.7" r="1.1" fill="white"/>
+          </svg>
+
+          <!-- テキスト -->
+          <div class="text-center sm:text-left">
+            <p class="font-heading font-semibold text-gray-800 text-lg leading-snug mb-1">
+              最新情報は Instagram でチェック
+            </p>
+            <p class="text-sm text-gray-500">
+              イベントの告知・当日の様子を随時発信しています。
+            </p>
+          </div>
+
+          <!-- 矢印 -->
+          <svg class="hidden sm:block shrink-0 w-5 h-5 text-pink-400 group-hover:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </a>
+      </section>
+    )}
 
     <!-- ═══════════════════════════════════════════════════
          これまでのイベント（タイムライン）
