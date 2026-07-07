@@ -94,18 +94,43 @@ const hasGallery = galleryImages.length > 1;
       />
 
       {upcoming.length > 0 ? (
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {upcoming.map(event => (
-            <EventCard
-              title={event.data.title}
-              date={event.data.date}
-              location={event.data.location}
-              venue={event.data.venue}
-              status="upcoming"
-              image={event.data.image}
-              summary={event.data.summary}
-            />
-          ))}
+        <div class="space-y-8">
+          <!-- 直近3件：カード表示 -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {upcoming.slice(0, 3).map(event => (
+              <EventCard
+                title={event.data.title}
+                date={event.data.date}
+                location={event.data.location}
+                venue={event.data.venue}
+                status="upcoming"
+                image={event.data.image}
+                summary={event.data.summary}
+              />
+            ))}
+          </div>
+
+          <!-- 4件目以降：テキストリスト -->
+          {upcoming.length > 3 && (
+            <ul class="divide-y divide-sakura-100 rounded-xl border border-sakura-100 overflow-hidden">
+              {upcoming.slice(3).map(event => {
+                const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'] as const;
+                const d = event.data.date;
+                const dateStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${WEEKDAYS[d.getDay()]}）`;
+                return (
+                  <li class="flex items-center gap-4 px-5 py-4 bg-white">
+                    <span class="shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full bg-accent-100 text-accent-700 border border-accent-300">
+                      開催予定
+                    </span>
+                    <div class="flex-1 min-w-0">
+                      <p class="font-heading font-semibold text-sakura-900 text-sm leading-snug">{event.data.title}</p>
+                      <p class="text-xs text-gray-500 mt-0.5">{dateStr}　{event.data.location}{event.data.venue ? `・${event.data.venue}` : ''}</p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       ) : (
         <div class="rounded-xl border border-sakura-100 bg-sakura-50 px-6 py-10 text-center">
