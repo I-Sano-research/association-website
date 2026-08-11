@@ -54,7 +54,7 @@ function isActive(href: string): boolean {
             href={link.href}
             class:list={[
               'px-3 py-2 rounded text-sm font-medium transition-colors',
-              isActive(link.href)
+              isActive(link.href) && link.href !== '/'
                 ? 'text-sakura-700 bg-sakura-50 font-semibold underline underline-offset-4 decoration-sakura-400'
                 : 'text-gray-700 hover:text-sakura-700 hover:bg-sakura-50',
             ]}
@@ -119,7 +119,7 @@ function isActive(href: string): boolean {
           href={link.href}
           class:list={[
             'px-4 py-3 rounded-lg text-sm font-medium transition-colors',
-            isActive(link.href)
+            isActive(link.href) && link.href !== '/'
               ? 'text-sakura-700 bg-sakura-50 font-semibold'
               : 'text-gray-700 hover:text-sakura-700 hover:bg-sakura-50',
           ]}
