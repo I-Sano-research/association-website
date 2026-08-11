@@ -1,0 +1,134 @@
+---
+const petals = [
+  { left: 4,  startY: -8, size: 18, opacity: 0.76, depth: 0.10, drift: 18, spin: 0.08, duration: 4.8, delay: -1.1 },
+  { left: 11, startY: 48, size: 12, opacity: 0.68, depth: 0.16, drift: 24, spin: -0.11, duration: 5.6, delay: -3.2 },
+  { left: 19, startY: 83, size: 21, opacity: 0.62, depth: 0.07, drift: 14, spin: 0.06, duration: 6.4, delay: -2.4 },
+  { left: 27, startY: 20, size: 14, opacity: 0.66, depth: 0.13, drift: 20, spin: -0.08, duration: 5.2, delay: -4.1 },
+  { left: 36, startY: 68, size: 10, opacity: 0.58, depth: 0.18, drift: 28, spin: 0.14, duration: 4.6, delay: -0.7 },
+  { left: 45, startY: 4,  size: 16, opacity: 0.64, depth: 0.09, drift: 16, spin: -0.05, duration: 6.8, delay: -5.0 },
+  { left: 55, startY: 91, size: 19, opacity: 0.60, depth: 0.14, drift: 22, spin: 0.09, duration: 5.8, delay: -2.0 },
+  { left: 64, startY: 34, size: 11, opacity: 0.70, depth: 0.20, drift: 30, spin: -0.13, duration: 4.9, delay: -3.7 },
+  { left: 72, startY: 73, size: 23, opacity: 0.64, depth: 0.08, drift: 16, spin: 0.05, duration: 7.2, delay: -1.6 },
+  { left: 80, startY: 13, size: 15, opacity: 0.72, depth: 0.15, drift: 26, spin: -0.10, duration: 5.4, delay: -4.5 },
+  { left: 89, startY: 58, size: 13, opacity: 0.64, depth: 0.12, drift: 20, spin: 0.12, duration: 6.1, delay: -2.8 },
+  { left: 96, startY: 29, size: 20, opacity: 0.74, depth: 0.17, drift: 24, spin: -0.07, duration: 5.0, delay: -0.3 },
+  { left: 23, startY: 105, size: 17, opacity: 0.62, depth: 0.11, drift: 18, spin: 0.10, duration: 6.6, delay: -3.5 },
+  { left: 76, startY: -24, size: 10, opacity: 0.68, depth: 0.19, drift: 28, spin: -0.14, duration: 4.5, delay: -1.9 },
+] as const;
+---
+
+<div id="sakura-petal-layer" class="sakura-petal-layer" aria-hidden="true">
+  {petals.map((petal) => (
+    <span
+      class="sakura-petal-track"
+      data-start-y={petal.startY}
+      data-depth={petal.depth}
+      data-drift={petal.drift}
+      data-spin={petal.spin}
+      style={`--petal-left:${petal.left}%;--petal-size:${petal.size}px;--petal-opacity:${petal.opacity};--petal-duration:${petal.duration}s;--petal-delay:${petal.delay}s;`}
+    >
+      <img
+        class="sakura-petal"
+        src="/images/sakura-petal.png"
+        alt=""
+        width="88"
+        height="128"
+        draggable="false"
+      />
+    </span>
+  ))}
+</div>
+
+<style>
+  .sakura-petal-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    contain: strict;
+  }
+
+  .sakura-petal-track {
+    position: absolute;
+    top: 0;
+    left: var(--petal-left);
+    width: var(--petal-size);
+    height: calc(var(--petal-size) * 1.45);
+    opacity: var(--petal-opacity);
+    will-change: transform;
+  }
+
+  .sakura-petal {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: saturate(1.12) drop-shadow(0 2px 2px rgba(120, 37, 64, 0.16));
+    transform-origin: 50% 55%;
+    animation: petal-flutter var(--petal-duration) ease-in-out var(--petal-delay) infinite alternate;
+  }
+
+  @keyframes petal-flutter {
+    0% {
+      transform: translate3d(-7px, -3px, 0) rotate3d(1, 1, 0, -24deg) rotate(-12deg);
+    }
+    50% {
+      transform: translate3d(5px, 2px, 0) rotate3d(1, -1, 0, 18deg) rotate(8deg);
+    }
+    100% {
+      transform: translate3d(9px, 6px, 0) rotate3d(-1, 1, 0, 28deg) rotate(18deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sakura-petal-layer {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const initSakuraPetals = () => {
+    const layer = document.getElementById('sakura-petal-layer');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    if (!layer || reduceMotion.matches) return;
+
+    const petals = Array.from(layer.querySelectorAll<HTMLElement>('.sakura-petal-track'));
+    let frameRequested = false;
+
+    const render = () => {
+      const scrollY = window.scrollY;
+      const viewportHeight = window.innerHeight;
+      const travel = viewportHeight + 160;
+
+      petals.forEach((petal, index) => {
+        const startY = Number(petal.dataset.startY ?? 0) / 100 * viewportHeight;
+        const depth = Number(petal.dataset.depth ?? 0.1);
+        const drift = Number(petal.dataset.drift ?? 20);
+        const spin = Number(petal.dataset.spin ?? 0.08);
+        const phase = index * 0.83;
+        const y = ((startY + scrollY * depth + 80) % travel + travel) % travel - 80;
+        const x = Math.sin(scrollY * 0.0025 + phase) * drift;
+        const rotation = scrollY * spin + index * 23;
+
+        petal.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) rotate(${rotation.toFixed(2)}deg)`;
+      });
+
+      frameRequested = false;
+    };
+
+    const requestRender = () => {
+      if (frameRequested) return;
+      frameRequested = true;
+      window.requestAnimationFrame(render);
+    };
+
+    render();
+    window.addEventListener('scroll', requestRender, { passive: true });
+    window.addEventListener('resize', requestRender);
+  };
+
+  initSakuraPetals();
+</script>
