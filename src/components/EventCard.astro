@@ -1,7 +1,10 @@
 ---
+import { formatEventDate } from '../utils/eventDates';
+
 interface Props {
   title:    string;
   date:     Date;
+  endDate?: Date;
   location: string;
   venue?:   string;
   status:   'upcoming' | 'finished';
@@ -9,14 +12,8 @@ interface Props {
   summary:  string;
 }
 
-const { title, date, location, venue, status, image, summary } = Astro.props;
-
-const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'] as const;
-const y  = date.getFullYear();
-const m  = date.getMonth() + 1;
-const d  = date.getDate();
-const wd = WEEKDAYS[date.getDay()];
-const formattedDate = `${y}年${m}月${d}日（${wd}）`;
+const { title, date, endDate, location, venue, status, image, summary } = Astro.props;
+const formattedDate = formatEventDate(date, endDate);
 
 const isUpcoming = status === 'upcoming';
 const badgeClass = isUpcoming

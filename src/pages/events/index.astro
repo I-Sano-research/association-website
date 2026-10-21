@@ -5,29 +5,18 @@ import EventCard from '../../components/EventCard.astro';
 import { getCollection } from 'astro:content';
 import galleryImages from '../../data/event-gallery.json';
 import siteConfig from '../../data/site.config.json';
+import { formatEventDate, formatTimelineDate, resolveEventStatus } from '../../utils/eventDates';
 
 const allEvents = await getCollection('events');
 const now = new Date();
 
-function resolveStatus(status: 'upcoming' | 'finished', date: Date): 'upcoming' | 'finished' {
-  if (status === 'upcoming' && date < now) return 'finished';
-  return status;
-}
-
 const upcoming = allEvents
-  .filter(e => resolveStatus(e.data.status, e.data.date) === 'upcoming')
+  .filter(e => resolveEventStatus(e.data.status, e.data.date, e.data.endDate, now) === 'upcoming')
   .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
 
 const finished = allEvents
-  .filter(e => resolveStatus(e.data.status, e.data.date) === 'finished')
+  .filter(e => resolveEventStatus(e.data.status, e.data.date, e.data.endDate, now) === 'finished')
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
-
-function formatTimelineDate(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}.${m}.${d}`;
-}
 
 const hasGallery = galleryImages.length > 1;
 ---
@@ -101,6 +90,7 @@ const hasGallery = galleryImages.length > 1;
               <EventCard
                 title={event.data.title}
                 date={event.data.date}
+                endDate={event.data.endDate}
                 location={event.data.location}
                 venue={event.data.venue}
                 status="upcoming"
@@ -114,9 +104,7 @@ const hasGallery = galleryImages.length > 1;
           {upcoming.length > 3 && (
             <ul class="divide-y divide-sakura-100 rounded-xl border border-sakura-100 overflow-hidden">
               {upcoming.slice(3).map(event => {
-                const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'] as const;
-                const d = event.data.date;
-                const dateStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${WEEKDAYS[d.getDay()]}）`;
+                const dateStr = formatEventDate(event.data.date, event.data.endDate);
                 return (
                   <li class="flex items-center gap-4 px-5 py-4 bg-white">
                     <span class="shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full bg-accent-100 text-accent-700 border border-accent-300">
@@ -229,7 +217,7 @@ const hasGallery = galleryImages.length > 1;
                       datetime={event.data.date.toISOString().slice(0, 10)}
                       class="text-sm font-mono tabular-nums text-sakura-500 leading-none"
                     >
-                      {formatTimelineDate(event.data.date)}
+                      {formatTimelineDate(event.data.date, event.data.endDate)}
                     </time>
                   </div>
 
@@ -240,7 +228,7 @@ const hasGallery = galleryImages.length > 1;
                       datetime={event.data.date.toISOString().slice(0, 10)}
                       class="md:hidden block text-xs font-mono tabular-nums text-sakura-500 mb-1.5 leading-none"
                     >
-                      {formatTimelineDate(event.data.date)}
+                      {formatTimelineDate(event.data.date, event.data.endDate)}
                     </time>
 
                     <div class="flex gap-3 items-start">

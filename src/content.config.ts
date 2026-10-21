@@ -7,11 +7,15 @@ const events = defineCollection({
     title: z.string(),
     slug: z.string(),
     date: z.coerce.date(),
+    endDate: z.coerce.date().optional(),
     location: z.string(),
     venue: z.string().optional(),
     status: z.enum(['upcoming', 'finished']),
     image: z.string().optional(),
     summary: z.string(),
+  }).refine(data => !data.endDate || data.endDate >= data.date, {
+    message: '終了日は開始日以降を指定してください。',
+    path: ['endDate'],
   }),
 });
 

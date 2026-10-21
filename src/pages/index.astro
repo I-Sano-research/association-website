@@ -5,6 +5,7 @@ import { getCollection } from 'astro:content';
 import supportData from '../data/support.json';
 import statsData from '../data/stats.json';
 import heroImages from '../data/hero-images.json';
+import { formatEventDate, resolveEventStatus } from '../utils/eventDates';
 
 // ── T-03 活動ハイライト：priority 上位3件 ──────────────────────────
 const allActivities = await getCollection('activities');
@@ -16,18 +17,14 @@ const topActivities = [...allActivities]
 const now = new Date();
 const allEvents = await getCollection('events');
 
-function resolveStatus(status: 'upcoming' | 'finished', date: Date) {
-  return status === 'upcoming' && date < now ? 'finished' : status;
-}
-
 const upcoming = allEvents
-  .filter(e => resolveStatus(e.data.status, e.data.date) === 'upcoming')
+  .filter(e => resolveEventStatus(e.data.status, e.data.date, e.data.endDate, now) === 'upcoming')
   .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
 
 const featuredEvents = upcoming.length > 0
   ? upcoming.slice(0, 2)
   : [...allEvents]
-      .filter(e => resolveStatus(e.data.status, e.data.date) === 'finished')
+      .filter(e => resolveEventStatus(e.data.status, e.data.date, e.data.endDate, now) === 'finished')
       .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
       .slice(0, 2);
 
@@ -238,10 +235,8 @@ const activityIcons: Record<string, string> = {
 
       <ul class="max-w-2xl mx-auto divide-y divide-sakura-100 rounded-2xl border border-sakura-100 overflow-hidden">
         {featuredEvents.map(event => {
-          const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'] as const;
-          const d = event.data.date;
-          const dateStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${WEEKDAYS[d.getDay()]}）`;
-          const isUpcoming = resolveStatus(event.data.status, event.data.date) === 'upcoming';
+          const dateStr = formatEventDate(event.data.date, event.data.endDate);
+          const isUpcoming = resolveEventStatus(event.data.status, event.data.date, event.data.endDate, now) === 'upcoming';
           return (
             <li class="flex items-center gap-4 px-6 py-5 bg-white">
               <span class:list={['shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full', isUpcoming ? 'bg-accent-100 text-accent-700 border border-accent-300' : 'bg-gray-100 text-gray-500 border border-gray-200']}>
